@@ -8,14 +8,12 @@ cd /D "%~dp0"
 :: Windows development environments. It takes a list of simple alphanumeric-
 :: only arguments which control (a) what is built, (b) which compiler & linker
 :: are used, and (c) extra high-level build options. By default, if no options
-:: are passed, then the main "raddbg" graphical debugger is built.
+:: are passed, then the main "files_space" graphical debugger is built.
 ::
 :: Below is a non-exhaustive list of possible ways to use the script:
-:: `build raddbg`
-:: `build raddbg clang`
-:: `build raddbg release`
-:: `build raddbg asan telemetry`
-:: `build rdi_from_pdb`
+:: `build files_space`
+:: `build files_space clang`
+:: `build files_space release`
 ::
 :: For a full list of possible build targets and their build command lines,
 :: search for @build_targets in this file.
@@ -23,7 +21,6 @@ cd /D "%~dp0"
 :: Below is a list of all possible non-target command line options:
 ::
 :: - `asan`: enable address sanitizer
-:: - `telemetry`: enable RAD telemetry profiling support
 
 :: --- Unpack Arguments -------------------------------------------------------
 for %%a in (%*) do set "%%a=1"
@@ -33,12 +30,11 @@ if "%debug%"=="1"   set release=0 && echo [debug mode]
 if "%release%"=="1" set debug=0 && echo [release mode]
 if "%msvc%"=="1"    set clang=0 && echo [msvc compile]
 if "%clang%"=="1"   set msvc=0 && echo [clang compile]
-if "%~1"==""                     echo [default mode, assuming `raddbg` build] && set raddbg=1
-if "%~1"=="release" if "%~2"=="" echo [default mode, assuming `raddbg` build] && set raddbg=1
+if "%~1"==""                     echo [default mode, assuming `files_space` build] && set files_space=1
+if "%~1"=="release" if "%~2"=="" echo [default mode, assuming `files_space` build] && set files_space=1
 
 :: --- Unpack Command Line Build Arguments ------------------------------------
 set auto_compile_flags=
-if "%telemetry%"=="1" set auto_compile_flags=%auto_compile_flags% -DPROFILE_TELEMETRY=1 && echo [telemetry profiling enabled]
 if "%asan%"=="1"      set auto_compile_flags=%auto_compile_flags% -fsanitize=address && echo [asan enabled]
 
 :: --- Compile/Link Line Definitions ------------------------------------------
@@ -99,28 +95,12 @@ if not "%no_meta%"=="1" (
 
 :: --- Build Everything (@build_targets) --------------------------------------
 pushd build
-if "%raddbg%"=="1"                     set didbuild=1 && %compile% ..\src\raddbg\raddbg_main.c                               %compile_link% %out%raddbg.exe || exit /b 1
-if "%rdi_from_pdb%"=="1"               set didbuild=1 && %compile% ..\src\rdi_from_pdb\rdi_from_pdb_main.c                   %compile_link% %out%rdi_from_pdb.exe || exit /b 1
-if "%rdi_from_dwarf%"=="1"             set didbuild=1 && %compile% ..\src\rdi_from_dwarf\rdi_from_dwarf.c                    %compile_link% %out%rdi_from_dwarf.exe || exit /b 1
-if "%rdi_dump%"=="1"                   set didbuild=1 && %compile% ..\src\rdi_dump\rdi_dump_main.c                           %compile_link% %out%rdi_dump.exe || exit /b 1
-if "%rdi_breakpad_from_pdb%"=="1"      set didbuild=1 && %compile% ..\src\rdi_breakpad_from_pdb\rdi_breakpad_from_pdb_main.c %compile_link% %out%rdi_breakpad_from_pdb.exe || exit /b 1
-if "%ryan_scratch%"=="1"               set didbuild=1 && %compile% ..\src\scratch\ryan_scratch.c                             %compile_link% %out%ryan_scratch.exe || exit /b 1
-if "%mule_main%"=="1"                  set didbuild=1 && del vc*.pdb mule*.pdb && %compile_release% %only_compile% ..\src\mule\mule_inline.cpp && %compile_release% %only_compile% ..\src\mule\mule_o2.cpp && %compile_debug% %EHsc% ..\src\mule\mule_main.cpp ..\src\mule\mule_c.c mule_inline.obj mule_o2.obj %compile_link% %no_aslr% %out%mule_main.exe || exit /b 1
-if "%mule_module%"=="1"                set didbuild=1 && %compile% ..\src\mule\mule_module.cpp                               %compile_link% %link_dll% %out%mule_module.dll || exit /b 1
-if "%mule_hotload%"=="1"               set didbuild=1 && %compile% ..\src\mule\mule_hotload_main.c %compile_link% %out%mule_hotload.exe & %compile% ..\src\mule\mule_hotload_module_main.c %compile_link% %link_dll% %out%mule_hotload_module.dll || exit /b 1
-if "%mule_peb_trample%"=="1" (
-  set didbuild=1
-  if exist mule_peb_trample.exe move mule_peb_trample.exe mule_peb_trample_old_%random%.exe
-  if exist mule_peb_trample_new.pdb move mule_peb_trample_new.pdb mule_peb_trample_old_%random%.pdb
-  if exist mule_peb_trample_new.rdi move mule_peb_trample_new.rdi mule_peb_trample_old_%random%.rdi
-  %compile% ..\src\mule\mule_peb_trample.c %compile_link% %out%mule_peb_trample_new.exe || exit /b 1
-  move mule_peb_trample_new.exe mule_peb_trample.exe
-)
+if "%files_space%"=="1"                     set didbuild=1 && %compile% ..\src\files_space\files_space_main.c                               %compile_link% %out%files_space.exe || exit /b 1
 popd
 
 :: --- Unset ------------------------------------------------------------------
 for %%a in (%*) do set "%%a=0"
-set raddbg=
+set files_space=
 set compile=
 set compile_link=
 set out=
@@ -130,6 +110,6 @@ set release=
 
 :: --- Warn On No Builds ------------------------------------------------------
 if "%didbuild%"=="" (
-  echo [WARNING] no valid build target specified; must use build target names as arguments to this script, like `build raddbg` or `build rdi_from_pdb`.
+  echo [WARNING] no valid build target specified; must use build target names as arguments to this script, like `build files_space`.
   exit /b 1
 )

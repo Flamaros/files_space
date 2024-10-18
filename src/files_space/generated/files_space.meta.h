@@ -3,8 +3,8 @@
 
 //- GENERATED CODE
 
-#ifndef RADDBG_META_H
-#define RADDBG_META_H
+#ifndef FILES_SPACE_META_H
+#define FILES_SPACE_META_H
 
 typedef enum RD_CfgSrc
 {
@@ -5512,4 +5512,4 @@ read_only global String8 rd_icon_file_bytes = {rd_icon_file_bytes__data, sizeof(
 
 C_LINKAGE_END
 
-#endif // RADDBG_META_H
+#endif // FILES_SPACE_META_H

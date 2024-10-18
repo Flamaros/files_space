@@ -1960,12 +1960,12 @@ RD_SettingVal rd_setting_code_default_val_table[19] =
 {1, 1},
 {1, 0},
 {1, 4},
-{1, 12},
-{1, 12},
+{1, 10},
+{1, 10},
 {1, 1},
 {1, 0},
-{1, 1},
-{1, 1},
+{1, 0},
+{1, 0},
 };
 
 Rng1S32 rd_setting_code_s32_range_table[19] =
