@@ -642,7 +642,6 @@
 typedef enum ExecMode
 {
   ExecMode_Normal,
-  ExecMode_Converter,
   ExecMode_Help,
 }
 ExecMode;
@@ -678,31 +677,12 @@ entry_point(CmdLine *cmd_line)
 
   //- rjf: unpack command line arguments
   ExecMode exec_mode = ExecMode_Normal;
-  B32 auto_run = 0;
-  B32 auto_step = 0;
-  B32 jit_attach = 0;
-  U64 jit_pid = 0;
-  U64 jit_code = 0;
-  U64 jit_addr = 0;
   {
-    if(cmd_line_has_flag(cmd_line, str8_lit("convert")))
-    {
-      exec_mode = ExecMode_Converter;
-    }
-    else if(cmd_line_has_flag(cmd_line, str8_lit("?")) ||
-            cmd_line_has_flag(cmd_line, str8_lit("help")))
+    if(cmd_line_has_flag(cmd_line, str8_lit("?")) ||
+       cmd_line_has_flag(cmd_line, str8_lit("help")))
     {
       exec_mode = ExecMode_Help;
     }
-    auto_run = cmd_line_has_flag(cmd_line, str8_lit("auto_run"));
-    auto_step = cmd_line_has_flag(cmd_line, str8_lit("auto_step"));
-    String8 jit_pid_string = cmd_line_string(cmd_line, str8_lit("jit_pid"));
-    String8 jit_code_string = cmd_line_string(cmd_line, str8_lit("jit_code"));
-    String8 jit_addr_string = cmd_line_string(cmd_line, str8_lit("jit_addr"));
-    try_u64_from_str8_c_rules(jit_pid_string, &jit_pid);
-    try_u64_from_str8_c_rules(jit_code_string, &jit_code);
-    try_u64_from_str8_c_rules(jit_addr_string, &jit_addr);
-    jit_attach = (jit_addr != 0);
   }
 
   //- rjf: set up layers
@@ -783,111 +763,17 @@ entry_point(CmdLine *cmd_line)
         {
           //- rjf: update
           quit = update();
-
-          //- rjf: auto run
-          if(auto_run)
-          {
-            auto_run = 0;
-            rd_cmd(RD_CmdKind_LaunchAndRun);
-          }
-
-          //- rjf: auto step
-          if(auto_step)
-          {
-            auto_step = 0;
-            rd_cmd(RD_CmdKind_StepInto);
-          }
-
-          //- rjf: jit attach
-          if(jit_attach)
-          {
-            jit_attach = 0;
-            rd_cmd(RD_CmdKind_Attach, .pid = jit_pid);
-          }
         }
       }
 
-    }break;
-
-    //- rjf: built-in pdb/dwarf -> rdi converter mode
-    case ExecMode_Converter:
-    {
-      Temp scratch = scratch_begin(0, 0);
-
-      //- rjf: parse arguments
-      P2R_User2Convert *user2convert = p2r_user2convert_from_cmdln(scratch.arena, cmd_line);
-
-      //- rjf: open output file
-      String8 output_name = push_str8_copy(scratch.arena, user2convert->output_name);
-      OS_Handle out_file = os_file_open(OS_AccessFlag_Read|OS_AccessFlag_Write, output_name);
-      B32 out_file_is_good = !os_handle_match(out_file, os_handle_zero());
-
-      //- rjf: convert
-      P2R_Convert2Bake *convert2bake = 0;
-      if(out_file_is_good)
-      {
-        convert2bake = p2r_convert(scratch.arena, user2convert);
-      }
-
-      //- rjf: bake
-      P2R_Bake2Serialize *bake2srlz = 0;
-      ProfScope("bake")
-      {
-        bake2srlz = p2r_bake(scratch.arena, convert2bake);
-      }
-
-      //- rjf: serialize
-      P2R_Serialize2File *srlz2file = 0;
-      ProfScope("serialize")
-      {
-        srlz2file = push_array(scratch.arena, P2R_Serialize2File, 1);
-        srlz2file->bundle = rdim_serialized_section_bundle_from_bake_results(&bake2srlz->bake_results);
-      }
-
-      //- rjf: compress
-      P2R_Serialize2File *srlz2file_compressed = srlz2file;
-      if(cmd_line_has_flag(cmd_line, str8_lit("compress"))) ProfScope("compress")
-      {
-        srlz2file_compressed = push_array(scratch.arena, P2R_Serialize2File, 1);
-        srlz2file_compressed = p2r_compress(scratch.arena, srlz2file);
-      }
-
-      //- rjf: serialize
-      String8List blobs = rdim_file_blobs_from_section_bundle(scratch.arena, &srlz2file_compressed->bundle);
-
-      //- rjf: write
-      if(out_file_is_good)
-      {
-        U64 off = 0;
-        for(String8Node *n = blobs.first; n != 0; n = n->next)
-        {
-          os_file_write(out_file, r1u64(off, off+n->string.size), n->string.str);
-          off += n->string.size;
-        }
-      }
-
-      //- rjf: close output file
-      os_file_close(out_file);
-
-      scratch_end(scratch);
     }break;
 
     //- rjf: help message box
     case ExecMode_Help:
     {
       os_graphical_message(0,
-                           str8_lit("The RAD Debugger - Help"),
-                           str8_lit("The following options may be used when starting the RAD Debugger from the command line:\n\n"
-                                    "--user:<path>\n"
-                                    "Use to specify the location of a user file which should be used. User files are used to store settings for users, including window and panel setups, path mapping, and visual settings. If this file does not exist, it will be created as necessary. This file will be autosaved as user-related changes are made.\n\n"
-                                    "--project:<path>\n"
-                                    "Use to specify the location of a project file which should be used. Project files are used to store settings for users and projects. If this file does not exist, it will be created as necessary. This file will be autosaved as project-related changes are made.\n\n"
-                                    "--auto_step\n"
-                                    "This will step into all active targets after the debugger initially starts.\n\n"
-                                    "--auto_run\n"
-                                    "This will run all active targets after the debugger initially starts.\n\n"
-                                    "--quit_after_success (or -q)\n"
-                                    "This will close the debugger automatically after all processes exit, if they all exited successfully (with code 0), and ran with no interruptions.\n\n"));
+                           str8_lit("Files Space - Help"),
+                           str8_lit("There is no option supported for the moment\n\n"));
     }break;
   }
 

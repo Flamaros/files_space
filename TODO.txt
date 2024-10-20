@@ -1,0 +1,2 @@
+[] Supprimer la fonction rd_cmd ? Est-ce que c'est quelque chose de spécifique pour le debugger ou est-ce que ça pourrait avoir un intéret pour moi ?
+
