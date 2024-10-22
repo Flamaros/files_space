@@ -299,7 +299,7 @@ struct D_RunLocalsCacheNode
   D_RunLocalsCacheNode *hash_next;
   DI_Key dbgi_key;
   U64 voff;
-  E_String2NumMap *locals_map;
+//!!  E_String2NumMap *locals_map;
 };
 
 typedef struct D_RunLocalsCacheSlot D_RunLocalsCacheSlot;
@@ -327,14 +327,14 @@ struct D_State
   Arena *arena;
   U64 frame_index;
   U64 frame_eval_memread_endt_us;
-  
+
   // rjf: commands
   Arena *cmds_arena;
   D_CmdList cmds;
-  
+
   // rjf: output log key
   U128 output_log_key;
-  
+
   // rjf: per-run caches
   D_UnwindCache unwind_cache;
   U64 tls_base_cache_reggen_idx;
@@ -347,11 +347,11 @@ struct D_State
   U64 member_cache_reggen_idx;
   D_RunLocalsCache member_caches[2];
   U64 member_cache_gen;
-  
+
   // rjf: view rule specification table
   U64 view_rule_spec_table_size;
   D_ViewRuleSpec **view_rule_spec_table;
-  
+
   // rjf: user -> ctrl driving state
   Arena *ctrl_last_run_arena;
   D_RunKind ctrl_last_run_kind;
@@ -366,7 +366,7 @@ struct D_State
   B32 ctrl_soft_halt_issued;
   Arena *ctrl_msg_arena;
   CTRL_MsgList ctrl_msgs;
-  
+
   // rjf: ctrl -> user reading state
   CTRL_EntityStore *ctrl_entity_store;
   Arena *ctrl_stop_arena;
@@ -473,8 +473,8 @@ internal CTRL_Unwind d_query_cached_unwind_from_thread(CTRL_Entity *thread);
 internal U64 d_query_cached_rip_from_thread(CTRL_Entity *thread);
 internal U64 d_query_cached_rip_from_thread_unwind(CTRL_Entity *thread, U64 unwind_count);
 internal U64 d_query_cached_tls_base_vaddr_from_process_root_rip(CTRL_Entity *process, U64 root_vaddr, U64 rip_vaddr);
-internal E_String2NumMap *d_query_cached_locals_map_from_dbgi_key_voff(DI_Key *dbgi_key, U64 voff);
-internal E_String2NumMap *d_query_cached_member_map_from_dbgi_key_voff(DI_Key *dbgi_key, U64 voff);
+//!! internal E_String2NumMap *d_query_cached_locals_map_from_dbgi_key_voff(DI_Key *dbgi_key, U64 voff);
+//!! internal E_String2NumMap *d_query_cached_member_map_from_dbgi_key_voff(DI_Key *dbgi_key, U64 voff);
 
 //- rjf: top-level command dispatch
 internal void d_push_cmd(D_CmdKind kind, D_CmdParams *params);

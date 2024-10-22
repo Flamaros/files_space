@@ -15,18 +15,18 @@ fzy_hash_from_string(U64 seed, String8 string)
   return result;
 }
 
-internal U64
-fzy_hash_from_params(FZY_Params *params)
-{
-  U64 hash = 5381;
-  hash = fzy_hash_from_string(hash, str8_struct(&params->target));
-  for(U64 idx = 0; idx < params->dbgi_keys.count; idx += 1)
-  {
-    hash = fzy_hash_from_string(hash, str8_struct(&params->dbgi_keys.v[idx].min_timestamp));
-    hash = fzy_hash_from_string(hash, params->dbgi_keys.v[idx].path);
-  }
-  return hash;
-}
+//!! internal U64
+// fzy_hash_from_params(FZY_Params *params)
+// {
+//   U64 hash = 5381;
+//   hash = fzy_hash_from_string(hash, str8_struct(&params->target));
+//   for(U64 idx = 0; idx < params->dbgi_keys.count; idx += 1)
+//   {
+//     hash = fzy_hash_from_string(hash, str8_struct(&params->dbgi_keys.v[idx].min_timestamp));
+//     hash = fzy_hash_from_string(hash, params->dbgi_keys.v[idx].path);
+//   }
+//   return hash;
+// }
 
 internal U64
 fzy_item_num_from_array_element_idx__linear_search(FZY_ItemArray *array, U64 element_idx)
@@ -43,45 +43,45 @@ fzy_item_num_from_array_element_idx__linear_search(FZY_ItemArray *array, U64 ele
   return fuzzy_item_num;
 }
 
-internal String8
-fzy_item_string_from_rdi_target_element_idx(RDI_Parsed *rdi, RDI_SectionKind target, U64 element_idx)
-{
-  String8 result = {0};
-  switch(target)
-  {
-    default:{}break;
-    case RDI_SectionKind_Procedures:
-    {
-      RDI_Procedure *proc = rdi_element_from_name_idx(rdi, Procedures, element_idx);
-      U64 name_size = 0;
-      U8 *name_base = rdi_string_from_idx(rdi, proc->name_string_idx, &name_size);
-      result = str8(name_base, name_size);
-    }break;
-    case RDI_SectionKind_GlobalVariables:
-    {
-      RDI_GlobalVariable *gvar = rdi_element_from_name_idx(rdi, GlobalVariables, element_idx);
-      U64 name_size = 0;
-      U8 *name_base = rdi_string_from_idx(rdi, gvar->name_string_idx, &name_size);
-      result = str8(name_base, name_size);
-    }break;
-    case RDI_SectionKind_ThreadVariables:
-    {
-      RDI_ThreadVariable *tvar = rdi_element_from_name_idx(rdi, ThreadVariables, element_idx);
-      U64 name_size = 0;
-      U8 *name_base = rdi_string_from_idx(rdi, tvar->name_string_idx, &name_size);
-      result = str8(name_base, name_size);
-    }break;
-    case RDI_SectionKind_UDTs:
-    {
-      RDI_UDT *udt = rdi_element_from_name_idx(rdi, UDTs, element_idx);
-      RDI_TypeNode *type_node = rdi_element_from_name_idx(rdi, TypeNodes, udt->self_type_idx);
-      U64 name_size = 0;
-      U8 *name_base = rdi_string_from_idx(rdi, type_node->user_defined.name_string_idx, &name_size);
-      result = str8(name_base, name_size);
-    }break;
-  }
-  return result;
-}
+//!! internal String8
+// fzy_item_string_from_rdi_target_element_idx(RDI_Parsed *rdi, RDI_SectionKind target, U64 element_idx)
+// {
+//   String8 result = {0};
+//   switch(target)
+//   {
+//     default:{}break;
+//     case RDI_SectionKind_Procedures:
+//     {
+//       RDI_Procedure *proc = rdi_element_from_name_idx(rdi, Procedures, element_idx);
+//       U64 name_size = 0;
+//       U8 *name_base = rdi_string_from_idx(rdi, proc->name_string_idx, &name_size);
+//       result = str8(name_base, name_size);
+//     }break;
+//     case RDI_SectionKind_GlobalVariables:
+//     {
+//       RDI_GlobalVariable *gvar = rdi_element_from_name_idx(rdi, GlobalVariables, element_idx);
+//       U64 name_size = 0;
+//       U8 *name_base = rdi_string_from_idx(rdi, gvar->name_string_idx, &name_size);
+//       result = str8(name_base, name_size);
+//     }break;
+//     case RDI_SectionKind_ThreadVariables:
+//     {
+//       RDI_ThreadVariable *tvar = rdi_element_from_name_idx(rdi, ThreadVariables, element_idx);
+//       U64 name_size = 0;
+//       U8 *name_base = rdi_string_from_idx(rdi, tvar->name_string_idx, &name_size);
+//       result = str8(name_base, name_size);
+//     }break;
+//     case RDI_SectionKind_UDTs:
+//     {
+//       RDI_UDT *udt = rdi_element_from_name_idx(rdi, UDTs, element_idx);
+//       RDI_TypeNode *type_node = rdi_element_from_name_idx(rdi, TypeNodes, udt->self_type_idx);
+//       U64 name_size = 0;
+//       U8 *name_base = rdi_string_from_idx(rdi, type_node->user_defined.name_string_idx, &name_size);
+//       result = str8(name_base, name_size);
+//     }break;
+//   }
+//   return result;
+// }
 
 internal FZY_Params
 fzy_params_copy(Arena *arena, FZY_Params *src)
@@ -197,16 +197,16 @@ fzy_items_from_key_params_query(FZY_Scope *scope, U128 key, FZY_Params *params, 
 {
   Temp scratch = scratch_begin(0, 0);
   FZY_ItemArray items = {0};
-  
+
   //- rjf: hash parameters
   U64 params_hash = fzy_hash_from_params(params);
-  
+
   //- rjf: unpack key
   U64 slot_idx = key.u64[1]%fzy_shared->slots_count;
   U64 stripe_idx = slot_idx%fzy_shared->stripes_count;
   FZY_Slot *slot = &fzy_shared->slots[slot_idx];
   FZY_Stripe *stripe = &fzy_shared->stripes[stripe_idx];
-  
+
   //- rjf: query and/or request
   OS_MutexScopeR(stripe->rw_mutex) for(;;)
   {
@@ -220,7 +220,7 @@ fzy_items_from_key_params_query(FZY_Scope *scope, U128 key, FZY_Params *params, 
         break;
       }
     }
-    
+
     // rjf: no node? -> allocate
     if(node == 0) OS_MutexScopeRWPromote(stripe->rw_mutex)
     {
@@ -232,7 +232,7 @@ fzy_items_from_key_params_query(FZY_Scope *scope, U128 key, FZY_Params *params, 
         node->buckets[idx].arena = arena_alloc();
       }
     }
-    
+
     // rjf: try to grab last valid results for this key/query; determine if stale
     B32 stale = 1;
     if(params_hash == node->buckets[node->gen%ArrayCount(node->buckets)].params_hash &&
@@ -246,7 +246,7 @@ fzy_items_from_key_params_query(FZY_Scope *scope, U128 key, FZY_Params *params, 
         *stale_out = stale;
       }
     }
-    
+
     // rjf: if stale -> request again
     if(stale) OS_MutexScopeRWPromote(stripe->rw_mutex)
     {
@@ -264,17 +264,17 @@ fzy_items_from_key_params_query(FZY_Scope *scope, U128 key, FZY_Params *params, 
         node->last_time_submitted_us = os_now_microseconds();
       }
     }
-    
+
     // rjf: not stale, or timeout -> break
     if(!stale || os_now_microseconds() >= endt_us)
     {
       break;
     }
-    
+
     // rjf: no results, but have time to wait -> wait
     os_condition_variable_wait_rw_r(stripe->cv, stripe->rw_mutex, endt_us);
   }
-  
+
   scratch_end(scratch);
   return items;
 }
@@ -354,7 +354,7 @@ fzy_search_thread__entry_point(void *p)
   {
     Temp scratch = scratch_begin(0, 0);
     DI_Scope *di_scope = di_scope_open();
-    
+
     ////////////////////////////
     //- rjf: dequeue next request
     //
@@ -364,14 +364,14 @@ fzy_search_thread__entry_point(void *p)
     U64 stripe_idx = slot_idx%fzy_shared->stripes_count;
     FZY_Slot *slot = &fzy_shared->slots[slot_idx];
     FZY_Stripe *stripe = &fzy_shared->stripes[stripe_idx];
-    
+
     ////////////////////////////
     //- rjf: grab next exe_path/query for this key
     //
     B32 task_is_good = 0;
     Arena *task_arena = 0;
     String8 query = {0};
-    FZY_Params params = {RDI_SectionKind_Procedures};
+//!!    FZY_Params params = {RDI_SectionKind_Procedures};
     U64 initial_submit_gen = 0;
     OS_MutexScopeW(stripe->rw_mutex)
     {
@@ -384,53 +384,53 @@ fzy_search_thread__entry_point(void *p)
           initial_submit_gen = n->submit_gen;
           task_arena         = bucket->arena;
           query              = bucket->query;
-          params             = bucket->params;
+//!!          params             = bucket->params;
           break;
         }
       }
     }
-    
+
     ////////////////////////////
     //- rjf: params -> look up all rdis
     //
-    U64 rdis_count = params.dbgi_keys.count;
-    RDI_Parsed **rdis = push_array(scratch.arena, RDI_Parsed *, rdis_count);
-    if(task_is_good)
-    {
-      for(U64 idx = 0; idx < rdis_count; idx += 1)
-      {
-        rdis[idx] = di_rdi_from_key(di_scope, &params.dbgi_keys.v[idx], max_U64);
-      }
-    }
-    
+    //!! U64 rdis_count = params.dbgi_keys.count;
+    // RDI_Parsed **rdis = push_array(scratch.arena, RDI_Parsed *, rdis_count);
+    // if(task_is_good)
+    // {
+    //   for(U64 idx = 0; idx < rdis_count; idx += 1)
+    //   {
+    //     rdis[idx] = di_rdi_from_key(di_scope, &params.dbgi_keys.v[idx], max_U64);
+    //   }
+    // }
+
     ////////////////////////////
     //- rjf: search target -> info about search space
     //
-    U64 element_name_idx_off = 0;
-    if(task_is_good)
-    {
-      switch(params.target)
-      {
-        default:{}break;
-        case RDI_SectionKind_Procedures:
-        {
-          element_name_idx_off = OffsetOf(RDI_Procedure, name_string_idx);
-        }break;
-        case RDI_SectionKind_GlobalVariables:
-        {
-          element_name_idx_off = OffsetOf(RDI_GlobalVariable, name_string_idx);
-        }break;
-        case RDI_SectionKind_ThreadVariables:
-        {
-          element_name_idx_off = OffsetOf(RDI_ThreadVariable, name_string_idx);
-        }break;
-        case RDI_SectionKind_UDTs:
-        {
-          // NOTE(rjf): name must be determined from self_type_idx
-        }break;
-      }
-    }
-    
+    //!! U64 element_name_idx_off = 0;
+    // if(task_is_good)
+    // {
+    //   switch(params.target)
+    //   {
+    //     default:{}break;
+    //     case RDI_SectionKind_Procedures:
+    //     {
+    //       element_name_idx_off = OffsetOf(RDI_Procedure, name_string_idx);
+    //     }break;
+    //     case RDI_SectionKind_GlobalVariables:
+    //     {
+    //       element_name_idx_off = OffsetOf(RDI_GlobalVariable, name_string_idx);
+    //     }break;
+    //     case RDI_SectionKind_ThreadVariables:
+    //     {
+    //       element_name_idx_off = OffsetOf(RDI_ThreadVariable, name_string_idx);
+    //     }break;
+    //     case RDI_SectionKind_UDTs:
+    //     {
+    //       // NOTE(rjf): name must be determined from self_type_idx
+    //     }break;
+    //   }
+    // }
+
     ////////////////////////////
     //- rjf: rdis * query * params -> item list
     //
@@ -438,62 +438,62 @@ fzy_search_thread__entry_point(void *p)
     if(task_is_good)
     {
       U64 base_idx = 0;
-      for(U64 rdi_idx = 0; rdi_idx < rdis_count; rdi_idx += 1)
-      {
-        RDI_Parsed *rdi = rdis[rdi_idx];
-        U64 element_count = 0;
-        void *table_base = rdi_section_raw_table_from_kind(rdi, params.target, &element_count);
-        U64 element_size = rdi_section_element_size_table[params.target];
-        for(U64 idx = 1; task_is_good && idx < element_count; idx += 1)
-        {
-          void *element = (U8 *)table_base + element_size*idx;
-          U32 *name_idx_ptr = (U32 *)((U8 *)element + element_name_idx_off);
-          if(params.target == RDI_SectionKind_UDTs)
-          {
-            RDI_UDT *udt = (RDI_UDT *)element;
-            RDI_TypeNode *type_node = rdi_element_from_name_idx(rdi, TypeNodes, udt->self_type_idx);
-            name_idx_ptr = &type_node->user_defined.name_string_idx;
-          }
-          U32 name_idx = *name_idx_ptr;
-          U64 name_size = 0;
-          U8 *name_base = rdi_string_from_idx(rdi, name_idx, &name_size);
-          String8 name = str8(name_base, name_size);
-          if(name.size == 0) { continue; }
-          FuzzyMatchRangeList matches = fuzzy_match_find(task_arena, query, name);
-          if(matches.count == matches.needle_part_count)
-          {
-            FZY_ItemChunk *chunk = items_list.last;
-            if(chunk == 0 || chunk->count >= chunk->cap)
-            {
-              chunk = push_array(scratch.arena, FZY_ItemChunk, 1);
-              chunk->cap = 1024;
-              chunk->count = 0;
-              chunk->v = push_array_no_zero(scratch.arena, FZY_Item, chunk->cap);
-              SLLQueuePush(items_list.first, items_list.last, chunk);
-              items_list.chunk_count += 1;
-            }
-            chunk->v[chunk->count].idx = base_idx + idx;
-            chunk->v[chunk->count].match_ranges = matches;
-            chunk->v[chunk->count].missed_size = (name_size > matches.total_dim) ? (name_size-matches.total_dim) : 0;
-            chunk->count += 1;
-            items_list.total_count += 1;
-          }
-          if(idx%100 == 99) OS_MutexScopeR(stripe->rw_mutex)
-          {
-            for(FZY_Node *n = slot->first; n != 0; n = n->next)
-            {
-              if(u128_match(n->key, key) && n->submit_gen > initial_submit_gen)
-              {
-                task_is_good = 0;
-                break;
-              }
-            }
-          }
-        }
-        base_idx += element_count;
-      }
+      //!! for(U64 rdi_idx = 0; rdi_idx < rdis_count; rdi_idx += 1)
+      // {
+      //   RDI_Parsed *rdi = rdis[rdi_idx];
+      //   U64 element_count = 0;
+      //   void *table_base = rdi_section_raw_table_from_kind(rdi, params.target, &element_count);
+      //   U64 element_size = rdi_section_element_size_table[params.target];
+      //   for(U64 idx = 1; task_is_good && idx < element_count; idx += 1)
+      //   {
+      //     void *element = (U8 *)table_base + element_size*idx;
+      //     U32 *name_idx_ptr = (U32 *)((U8 *)element + element_name_idx_off);
+      //     if(params.target == RDI_SectionKind_UDTs)
+      //     {
+      //       RDI_UDT *udt = (RDI_UDT *)element;
+      //       RDI_TypeNode *type_node = rdi_element_from_name_idx(rdi, TypeNodes, udt->self_type_idx);
+      //       name_idx_ptr = &type_node->user_defined.name_string_idx;
+      //     }
+      //     U32 name_idx = *name_idx_ptr;
+      //     U64 name_size = 0;
+      //     U8 *name_base = rdi_string_from_idx(rdi, name_idx, &name_size);
+      //     String8 name = str8(name_base, name_size);
+      //     if(name.size == 0) { continue; }
+      //     FuzzyMatchRangeList matches = fuzzy_match_find(task_arena, query, name);
+      //     if(matches.count == matches.needle_part_count)
+      //     {
+      //       FZY_ItemChunk *chunk = items_list.last;
+      //       if(chunk == 0 || chunk->count >= chunk->cap)
+      //       {
+      //         chunk = push_array(scratch.arena, FZY_ItemChunk, 1);
+      //         chunk->cap = 1024;
+      //         chunk->count = 0;
+      //         chunk->v = push_array_no_zero(scratch.arena, FZY_Item, chunk->cap);
+      //         SLLQueuePush(items_list.first, items_list.last, chunk);
+      //         items_list.chunk_count += 1;
+      //       }
+      //       chunk->v[chunk->count].idx = base_idx + idx;
+      //       chunk->v[chunk->count].match_ranges = matches;
+      //       chunk->v[chunk->count].missed_size = (name_size > matches.total_dim) ? (name_size-matches.total_dim) : 0;
+      //       chunk->count += 1;
+      //       items_list.total_count += 1;
+      //     }
+      //     if(idx%100 == 99) OS_MutexScopeR(stripe->rw_mutex)
+      //     {
+      //       for(FZY_Node *n = slot->first; n != 0; n = n->next)
+      //       {
+      //         if(u128_match(n->key, key) && n->submit_gen > initial_submit_gen)
+      //         {
+      //           task_is_good = 0;
+      //           break;
+      //         }
+      //       }
+      //     }
+      //   }
+      //   base_idx += element_count;
+      // }
     }
-    
+
     //- rjf: item list -> item array
     FZY_ItemArray items = {0};
     if(task_is_good)
@@ -507,13 +507,13 @@ fzy_search_thread__entry_point(void *p)
         idx += chunk->count;
       }
     }
-    
+
     //- rjf: sort item array
     if(items.count != 0 && query.size != 0)
     {
       quick_sort(items.v, items.count, sizeof(FZY_Item), fzy_qsort_compare_items);
     }
-    
+
     //- rjf: commit to cache - busyloop on scope touches
     if(task_is_good)
     {
@@ -540,7 +540,7 @@ fzy_search_thread__entry_point(void *p)
         }
       }
     }
-    
+
     di_scope_close(di_scope);
     scratch_end(scratch);
   }

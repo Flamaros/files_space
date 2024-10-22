@@ -32,14 +32,14 @@ struct RD_HandleList
 ////////////////////////////////
 //~ rjf: Evaluation Spaces
 
-typedef U64 RD_EvalSpaceKind;
-enum
-{
-  RD_EvalSpaceKind_CtrlEntity = E_SpaceKind_FirstUserDefined,
-  RD_EvalSpaceKind_MetaEntity,
-  RD_EvalSpaceKind_MetaCtrlEntity,
-  RD_EvalSpaceKind_MetaCollection,
-};
+//!! typedef U64 RD_EvalSpaceKind;
+// enum
+// {
+//   RD_EvalSpaceKind_CtrlEntity = E_SpaceKind_FirstUserDefined,
+//   RD_EvalSpaceKind_MetaEntity,
+//   RD_EvalSpaceKind_MetaCtrlEntity,
+//   RD_EvalSpaceKind_MetaCollection,
+// };
 
 ////////////////////////////////
 //~ rjf: Entity Kind Flags
@@ -196,7 +196,7 @@ struct RD_TransientViewNode
 {
   RD_TransientViewNode *next;
   RD_TransientViewNode *prev;
-  EV_Key key;
+//!!  EV_Key key;
   RD_View *view;
   Arena *initial_params_arena;
   MD_Node *initial_params;
@@ -739,21 +739,21 @@ struct RD_Window
 ////////////////////////////////
 //~ rjf: Eval Visualization View Cache Types
 
-typedef struct RD_EvalVizViewCacheNode RD_EvalVizViewCacheNode;
-struct RD_EvalVizViewCacheNode
-{
-  RD_EvalVizViewCacheNode *next;
-  RD_EvalVizViewCacheNode *prev;
-  U64 key;
-  EV_View *v;
-};
+//!! typedef struct RD_EvalVizViewCacheNode RD_EvalVizViewCacheNode;
+// struct RD_EvalVizViewCacheNode
+// {
+//   RD_EvalVizViewCacheNode *next;
+//   RD_EvalVizViewCacheNode *prev;
+//   U64 key;
+//   EV_View *v;
+// };
 
-typedef struct RD_EvalVizViewCacheSlot RD_EvalVizViewCacheSlot;
-struct RD_EvalVizViewCacheSlot
-{
-  RD_EvalVizViewCacheNode *first;
-  RD_EvalVizViewCacheNode *last;
-};
+// typedef struct RD_EvalVizViewCacheSlot RD_EvalVizViewCacheSlot;
+// struct RD_EvalVizViewCacheSlot
+// {
+//   RD_EvalVizViewCacheNode *first;
+//   RD_EvalVizViewCacheNode *last;
+// };
 
 ////////////////////////////////
 //~ rjf: Meta Evaluation Cache Types
@@ -845,9 +845,9 @@ struct RD_State
   String8 string_search_string;
 
   // rjf: eval visualization view cache
-  U64 eval_viz_view_cache_slots_count;
-  RD_EvalVizViewCacheSlot *eval_viz_view_cache_slots;
-  RD_EvalVizViewCacheNode *eval_viz_view_cache_node_free;
+  //!! U64 eval_viz_view_cache_slots_count;
+  // RD_EvalVizViewCacheSlot *eval_viz_view_cache_slots;
+  // RD_EvalVizViewCacheNode *eval_viz_view_cache_node_free;
 
   // rjf: ctrl entity meta eval cache
   U64 ctrl_entity_meval_cache_slots_count;
@@ -973,7 +973,7 @@ read_only global RD_ViewRuleInfo rd_nil_view_rule_info =
   {0},
   RD_IconKind_Null,
   0,
-  EV_VIEW_RULE_EXPR_EXPAND_INFO_FUNCTION_NAME(nil),
+  //!! EV_VIEW_RULE_EXPR_EXPAND_INFO_FUNCTION_NAME(nil),
   RD_VIEW_RULE_UI_FUNCTION_NAME(null)
 };
 
@@ -1074,8 +1074,8 @@ internal Vec4F32 rd_hsva_from_entity(RD_Entity *entity);
 internal Vec4F32 rd_rgba_from_entity(RD_Entity *entity);
 
 //- rjf: entity -> expansion tree keys
-internal EV_Key rd_ev_key_from_entity(RD_Entity *entity);
-internal EV_Key rd_parent_ev_key_from_entity(RD_Entity *entity);
+//!! internal EV_Key rd_ev_key_from_entity(RD_Entity *entity);
+// internal EV_Key rd_parent_ev_key_from_entity(RD_Entity *entity);
 
 //- rjf: entity -> evaluation
 internal RD_EntityEval *rd_eval_from_entity(Arena *arena, RD_Entity *entity);
@@ -1092,7 +1092,7 @@ internal RD_View *rd_view_from_handle(RD_Handle handle);
 //~ rjf: View Spec Type Functions
 
 internal RD_ViewRuleKind rd_view_rule_kind_from_string(String8 string);
-internal RD_ViewRuleInfo *rd_view_rule_info_from_kind(RD_ViewRuleKind kind);
+// internal RD_ViewRuleInfo *rd_view_rule_info_from_kind(RD_ViewRuleKind kind);
 internal RD_ViewRuleInfo *rd_view_rule_info_from_string(String8 string);
 
 ////////////////////////////////
@@ -1124,7 +1124,7 @@ internal RD_View *rd_selected_tab_from_panel(RD_Panel *panel);
 
 //- rjf: icons & display strings
 internal RD_IconKind rd_icon_kind_from_view(RD_View *view);
-internal DR_FancyStringList rd_title_fstrs_from_view(Arena *arena, RD_View *view, Vec4F32 primary_color, Vec4F32 secondary_color, F32 size);
+// internal DR_FancyStringList rd_title_fstrs_from_view(Arena *arena, RD_View *view, Vec4F32 primary_color, Vec4F32 secondary_color, F32 size);
 
 ////////////////////////////////
 //~ rjf: Window Type Functions
@@ -1218,45 +1218,45 @@ internal DR_FancyStringList rd_title_fstrs_from_ctrl_entity(Arena *arena, CTRL_E
 //~ rjf: Evaluation Spaces
 
 //- rjf: entity <-> eval space
-internal RD_Entity *rd_entity_from_eval_space(E_Space space);
-internal E_Space rd_eval_space_from_entity(RD_Entity *entity);
+//!! internal RD_Entity *rd_entity_from_eval_space(E_Space space);
+//!! internal E_Space rd_eval_space_from_entity(RD_Entity *entity);
 
 //- rjf: ctrl entity <-> eval space
-internal CTRL_Entity *rd_ctrl_entity_from_eval_space(E_Space space);
-internal E_Space rd_eval_space_from_ctrl_entity(CTRL_Entity *entity, E_SpaceKind kind);
+//!! internal CTRL_Entity *rd_ctrl_entity_from_eval_space(E_Space space);
+// internal E_Space rd_eval_space_from_ctrl_entity(CTRL_Entity *entity, E_SpaceKind kind);
 
 //- rjf: entity -> meta eval
-internal CTRL_MetaEval *rd_ctrl_meta_eval_from_entity(Arena *arena, RD_Entity *entity);
-internal CTRL_MetaEval *rd_ctrl_meta_eval_from_ctrl_entity(Arena *arena, CTRL_Entity *entity);
+//!! internal CTRL_MetaEval *rd_ctrl_meta_eval_from_entity(Arena *arena, RD_Entity *entity);
+// internal CTRL_MetaEval *rd_ctrl_meta_eval_from_ctrl_entity(Arena *arena, CTRL_Entity *entity);
 
 //- rjf: eval space reads/writes
-internal B32 rd_eval_space_read(void *u, E_Space space, void *out, Rng1U64 range);
-internal B32 rd_eval_space_write(void *u, E_Space space, void *in, Rng1U64 range);
+//!! internal B32 rd_eval_space_read(void *u, E_Space space, void *out, Rng1U64 range);
+// internal B32 rd_eval_space_write(void *u, E_Space space, void *in, Rng1U64 range);
 
 //- rjf: asynchronous streamed reads -> hashes from spaces
-internal U128 rd_key_from_eval_space_range(E_Space space, Rng1U64 range, B32 zero_terminated);
+//!! internal U128 rd_key_from_eval_space_range(E_Space space, Rng1U64 range, B32 zero_terminated);
 
 //- rjf: space -> entire range
-internal Rng1U64 rd_whole_range_from_eval_space(E_Space space);
+//!! internal Rng1U64 rd_whole_range_from_eval_space(E_Space space);
 
 ////////////////////////////////
 //~ rjf: Evaluation Visualization
 
 //- rjf: writing values back to child processes
-internal B32 rd_commit_eval_value_string(E_Eval dst_eval, String8 string);
+//!! internal B32 rd_commit_eval_value_string(E_Eval dst_eval, String8 string);
 
 //- rjf: eval / view rule params tree info extraction
-internal U64 rd_base_offset_from_eval(E_Eval eval);
-internal E_Value rd_value_from_params_key(MD_Node *params, String8 key);
-internal Rng1U64 rd_range_from_eval_params(E_Eval eval, MD_Node *params);
-internal TXT_LangKind rd_lang_kind_from_eval_params(E_Eval eval, MD_Node *params);
-internal Arch rd_arch_from_eval_params(E_Eval eval, MD_Node *params);
-internal Vec2S32 rd_dim2s32_from_eval_params(E_Eval eval, MD_Node *params);
-internal R_Tex2DFormat rd_tex2dformat_from_eval_params(E_Eval eval, MD_Node *params);
+//!! internal U64 rd_base_offset_from_eval(E_Eval eval);
+// internal E_Value rd_value_from_params_key(MD_Node *params, String8 key);
+// internal Rng1U64 rd_range_from_eval_params(E_Eval eval, MD_Node *params);
+// internal TXT_LangKind rd_lang_kind_from_eval_params(E_Eval eval, MD_Node *params);
+// internal Arch rd_arch_from_eval_params(E_Eval eval, MD_Node *params);
+// internal Vec2S32 rd_dim2s32_from_eval_params(E_Eval eval, MD_Node *params);
+// internal R_Tex2DFormat rd_tex2dformat_from_eval_params(E_Eval eval, MD_Node *params);
 
 //- rjf: eval <-> file path
-internal String8 rd_file_path_from_eval_string(Arena *arena, String8 string);
-internal String8 rd_eval_string_from_file_path(Arena *arena, String8 string);
+// internal String8 rd_file_path_from_eval_string(Arena *arena, String8 string);
+// internal String8 rd_eval_string_from_file_path(Arena *arena, String8 string);
 
 ////////////////////////////////
 //~ rjf: View State Functions
@@ -1310,7 +1310,7 @@ internal void rd_store_view_paramf(String8 key, char *fmt, ...);
 ////////////////////////////////
 //~ rjf: Expand-Keyed Transient View Functions
 
-internal RD_TransientViewNode *rd_transient_view_node_from_ev_key(RD_View *owner_view, EV_Key key);
+//!! internal RD_TransientViewNode *rd_transient_view_node_from_ev_key(RD_View *owner_view, EV_Key key);
 
 ////////////////////////////////
 //~ rjf: Panel State Functions
@@ -1331,29 +1331,29 @@ internal void rd_window_frame(RD_Window *ws);
 ////////////////////////////////
 //~ rjf: Eval Visualization
 
-internal EV_ExpandInfo      rd_ev_view_rule_expr_expand_info__meta_entities(Arena *arena, EV_View *view, String8 filter, E_Expr *expr, MD_Node *params, RD_EntityKind kind);
-internal EV_ExpandRangeInfo rd_ev_view_rule_expr_expand_range_info__meta_entities(Arena *arena, EV_View *view, String8 filter, E_Expr *expr, MD_Node *params, Rng1U64 idx_range, void *user_data, RD_EntityKind kind, B32 add_new_at_top);
-internal U64                rd_ev_view_rule_expr_id_from_num__meta_entities(U64 num, void *user_data, RD_EntityKind kind, B32 add_new_at_top);
-internal U64                rd_ev_view_rule_expr_num_from_id__meta_entities(U64 id, void *user_data, RD_EntityKind kind, B32 add_new_at_top);
+//!! internal EV_ExpandInfo      rd_ev_view_rule_expr_expand_info__meta_entities(Arena *arena, EV_View *view, String8 filter, E_Expr *expr, MD_Node *params, RD_EntityKind kind);
+// internal EV_ExpandRangeInfo rd_ev_view_rule_expr_expand_range_info__meta_entities(Arena *arena, EV_View *view, String8 filter, E_Expr *expr, MD_Node *params, Rng1U64 idx_range, void *user_data, RD_EntityKind kind, B32 add_new_at_top);
+// internal U64                rd_ev_view_rule_expr_id_from_num__meta_entities(U64 num, void *user_data, RD_EntityKind kind, B32 add_new_at_top);
+// internal U64                rd_ev_view_rule_expr_num_from_id__meta_entities(U64 id, void *user_data, RD_EntityKind kind, B32 add_new_at_top);
 
-internal EV_ExpandInfo      rd_ev_view_rule_expr_expand_info__meta_ctrl_entities(Arena *arena, EV_View *view, String8 filter, E_Expr *expr, MD_Node *params, CTRL_EntityKind kind);
-internal EV_ExpandRangeInfo rd_ev_view_rule_expr_expand_range_info__meta_ctrl_entities(Arena *arena, EV_View *view, String8 filter, E_Expr *expr, MD_Node *params, Rng1U64 idx_range, void *user_data, CTRL_EntityKind kind);
-internal U64                rd_ev_view_rule_expr_id_from_num__meta_ctrl_entities(U64 num, void *user_data, CTRL_EntityKind kind);
-internal U64                rd_ev_view_rule_expr_num_from_id__meta_ctrl_entities(U64 id, void *user_data, CTRL_EntityKind kind);
+//!! internal EV_ExpandInfo      rd_ev_view_rule_expr_expand_info__meta_ctrl_entities(Arena *arena, EV_View *view, String8 filter, E_Expr *expr, MD_Node *params, CTRL_EntityKind kind);
+// internal EV_ExpandRangeInfo rd_ev_view_rule_expr_expand_range_info__meta_ctrl_entities(Arena *arena, EV_View *view, String8 filter, E_Expr *expr, MD_Node *params, Rng1U64 idx_range, void *user_data, CTRL_EntityKind kind);
+// internal U64                rd_ev_view_rule_expr_id_from_num__meta_ctrl_entities(U64 num, void *user_data, CTRL_EntityKind kind);
+// internal U64                rd_ev_view_rule_expr_num_from_id__meta_ctrl_entities(U64 id, void *user_data, CTRL_EntityKind kind);
 
-internal EV_ExpandInfo      rd_ev_view_rule_expr_expand_info__debug_info_tables(Arena *arena, EV_View *view, String8 filter, E_Expr *expr, MD_Node *params, RDI_SectionKind section);
-internal EV_ExpandRangeInfo rd_ev_view_rule_expr_expand_range_info__debug_info_tables(Arena *arena, EV_View *view, String8 filter, E_Expr *expr, MD_Node *params, Rng1U64 idx_range, void *user_data, RDI_SectionKind section);
-internal U64                rd_ev_view_rule_expr_id_from_num__debug_info_tables(U64 num, void *user_data, RDI_SectionKind section);
-internal U64                rd_ev_view_rule_expr_num_from_id__debug_info_tables(U64 id, void *user_data, RDI_SectionKind section);
+//!! internal EV_ExpandInfo      rd_ev_view_rule_expr_expand_info__debug_info_tables(Arena *arena, EV_View *view, String8 filter, E_Expr *expr, MD_Node *params, RDI_SectionKind section);
+//!! internal EV_ExpandRangeInfo rd_ev_view_rule_expr_expand_range_info__debug_info_tables(Arena *arena, EV_View *view, String8 filter, E_Expr *expr, MD_Node *params, Rng1U64 idx_range, void *user_data, RDI_SectionKind section);
+//!! internal U64                rd_ev_view_rule_expr_id_from_num__debug_info_tables(U64 num, void *user_data, RDI_SectionKind section);
+//!! internal U64                rd_ev_view_rule_expr_num_from_id__debug_info_tables(U64 id, void *user_data, RDI_SectionKind section);
 
-internal EV_View *rd_ev_view_from_key(U64 key);
-internal F32 rd_append_value_strings_from_eval(Arena *arena, EV_StringFlags flags, U32 default_radix, FNT_Tag font, F32 font_size, F32 max_size, S32 depth, E_Eval eval, E_Member *member, EV_ViewRuleList *view_rules, String8List *out);
-internal String8 rd_value_string_from_eval(Arena *arena, EV_StringFlags flags, U32 default_radix, FNT_Tag font, F32 font_size, F32 max_size, E_Eval eval, E_Member *member, EV_ViewRuleList *view_rules);
+//!! internal EV_View *rd_ev_view_from_key(U64 key);
+// internal F32 rd_append_value_strings_from_eval(Arena *arena, EV_StringFlags flags, U32 default_radix, FNT_Tag font, F32 font_size, F32 max_size, S32 depth, E_Eval eval, E_Member *member, EV_ViewRuleList *view_rules, String8List *out);
+// internal String8 rd_value_string_from_eval(Arena *arena, EV_StringFlags flags, U32 default_radix, FNT_Tag font, F32 font_size, F32 max_size, E_Eval eval, E_Member *member, EV_ViewRuleList *view_rules);
 
 ////////////////////////////////
 //~ rjf: Hover Eval
 
-internal void rd_set_hover_eval(Vec2F32 pos, String8 file_path, TxtPt pt, U64 vaddr, String8 string);
+//!! internal void rd_set_hover_eval(Vec2F32 pos, String8 file_path, TxtPt pt, U64 vaddr, String8 string);
 
 ////////////////////////////////
 //~ rjf: Auto-Complete Lister
@@ -1427,7 +1427,7 @@ internal String8 rd_cfg_path_from_src(RD_CfgSrc src);
 //- rjf: entity cache queries
 internal RD_EntityList rd_query_cached_entity_list_with_kind(RD_EntityKind kind);
 internal RD_EntityList rd_push_active_target_list(Arena *arena);
-internal RD_Entity *rd_entity_from_ev_key_and_kind(EV_Key key, RD_EntityKind kind);
+//!! internal RD_Entity *rd_entity_from_ev_key_and_kind(EV_Key key, RD_EntityKind kind);
 
 //- rjf: config state
 internal RD_CfgTable *rd_cfg_table(void);

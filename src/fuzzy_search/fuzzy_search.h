@@ -46,7 +46,7 @@ struct FZY_ItemArray
 typedef struct FZY_Params FZY_Params;
 struct FZY_Params
 {
-  RDI_SectionKind target;
+//!!  RDI_SectionKind target;
   DI_KeyArray dbgi_keys;
 };
 
@@ -135,13 +135,13 @@ typedef struct FZY_Shared FZY_Shared;
 struct FZY_Shared
 {
   Arena *arena;
-  
+
   // rjf: search artifact cache table
   U64 slots_count;
   U64 stripes_count;
   FZY_Slot *slots;
   FZY_Stripe *stripes;
-  
+
   // rjf: threads
   U64 thread_count;
   FZY_Thread *threads;
@@ -157,9 +157,9 @@ thread_static FZY_TCTX *fzy_tctx = 0;
 //~ rjf: Helpers
 
 internal U64 fzy_hash_from_string(U64 seed, String8 string);
-internal U64 fzy_hash_from_params(FZY_Params *params);
+//!! internal U64 fzy_hash_from_params(FZY_Params *params);
 internal U64 fzy_item_num_from_array_element_idx__linear_search(FZY_ItemArray *array, U64 element_idx);
-internal String8 fzy_item_string_from_rdi_target_element_idx(RDI_Parsed *rdi, RDI_SectionKind target, U64 element_idx);
+//!! internal String8 fzy_item_string_from_rdi_target_element_idx(RDI_Parsed *rdi, RDI_SectionKind target, U64 element_idx);
 internal FZY_Params fzy_params_copy(Arena *arena, FZY_Params *src);
 
 ////////////////////////////////

@@ -387,7 +387,7 @@ struct CTRL_CallStackInlineFrame
 {
   CTRL_CallStackInlineFrame *next;
   CTRL_CallStackInlineFrame *prev;
-  RDI_InlineSite *inline_site;
+//!!  RDI_InlineSite *inline_site;
 };
 
 typedef struct CTRL_CallStackFrame CTRL_CallStackFrame;
@@ -397,8 +397,8 @@ struct CTRL_CallStackFrame
   CTRL_CallStackInlineFrame *last_inline_frame;
   U64 inline_frame_count;
   void *regs;
-  RDI_Parsed *rdi;
-  RDI_Procedure *procedure;
+//!!  RDI_Parsed *rdi;
+//!!  RDI_Procedure *procedure;
 };
 
 typedef struct CTRL_CallStack CTRL_CallStack;
@@ -495,12 +495,12 @@ struct CTRL_UserBreakpointList
 ////////////////////////////////
 //~ rjf: Evaluation Spaces
 
-typedef U64 CTRL_EvalSpaceKind;
-enum
-{
-  CTRL_EvalSpaceKind_Entity = E_SpaceKind_FirstUserDefined,
-  CTRL_EvalSpaceKind_Meta,
-};
+//!! typedef U64 CTRL_EvalSpaceKind;
+// enum
+// {
+//   CTRL_EvalSpaceKind_Entity = E_SpaceKind_FirstUserDefined,
+//   CTRL_EvalSpaceKind_Meta,
+// };
 
 ////////////////////////////////
 //~ rjf: Message Types
@@ -571,11 +571,11 @@ typedef enum CTRL_EventKind
 {
   CTRL_EventKind_Null,
   CTRL_EventKind_Error,
-  
+
   //- rjf: starts/stops
   CTRL_EventKind_Started,
   CTRL_EventKind_Stopped,
-  
+
   //- rjf: entity creation/deletion
   CTRL_EventKind_NewProc,
   CTRL_EventKind_NewThread,
@@ -583,25 +583,25 @@ typedef enum CTRL_EventKind
   CTRL_EventKind_EndProc,
   CTRL_EventKind_EndThread,
   CTRL_EventKind_EndModule,
-  
+
   //- rjf: thread freeze state changes
   CTRL_EventKind_ThreadFrozen,
   CTRL_EventKind_ThreadThawed,
-  
+
   //- rjf: debug info changes
   CTRL_EventKind_ModuleDebugInfoPathChange,
-  
+
   //- rjf: debug strings / decorations
   CTRL_EventKind_DebugString,
   CTRL_EventKind_ThreadName,
   CTRL_EventKind_ThreadColor,
-  
+
   //- rjf: memory
   CTRL_EventKind_MemReserve,
   CTRL_EventKind_MemCommit,
   CTRL_EventKind_MemDecommit,
   CTRL_EventKind_MemRelease,
-  
+
   CTRL_EventKind_COUNT
 }
 CTRL_EventKind;
@@ -827,16 +827,16 @@ struct CTRL_State
 {
   Arena *arena;
   CTRL_WakeupFunctionType *wakeup_hook;
-  
+
   // rjf: name -> register/alias hash tables for eval
-  E_String2NumMap arch_string2reg_tables[Arch_COUNT];
-  E_String2NumMap arch_string2alias_tables[Arch_COUNT];
-  
+  //!! E_String2NumMap arch_string2reg_tables[Arch_COUNT];
+  //!! E_String2NumMap arch_string2alias_tables[Arch_COUNT];
+
   // rjf: caches
   CTRL_ProcessMemoryCache process_memory_cache;
   CTRL_ThreadRegCache thread_reg_cache;
   CTRL_ModuleImageInfoCache module_image_info_cache;
-  
+
   // rjf: user -> ctrl msg ring buffer
   U64 u2c_ring_size;
   U8 *u2c_ring_base;
@@ -844,7 +844,7 @@ struct CTRL_State
   U64 u2c_ring_read_pos;
   OS_Handle u2c_ring_mutex;
   OS_Handle u2c_ring_cv;
-  
+
   // rjf: ctrl -> user event ring buffer
   U64 c2u_ring_size;
   U64 c2u_ring_max_string_size;
@@ -853,7 +853,7 @@ struct CTRL_State
   U64 c2u_ring_read_pos;
   OS_Handle c2u_ring_mutex;
   OS_Handle c2u_ring_cv;
-  
+
   // rjf: ctrl thread state
   String8 ctrl_thread_log_path;
   OS_Handle ctrl_thread;
@@ -869,7 +869,7 @@ struct CTRL_State
   CTRL_MetaEvalArray user_meta_evals;
   U64 exception_code_filters[(CTRL_ExceptionCodeKind_COUNT+63)/64];
   U64 process_counter;
-  
+
   // rjf: user -> memstream ring buffer
   U64 u2ms_ring_size;
   U8 *u2ms_ring_base;
@@ -877,7 +877,7 @@ struct CTRL_State
   U64 u2ms_ring_read_pos;
   OS_Handle u2ms_ring_mutex;
   OS_Handle u2ms_ring_cv;
-  
+
   // rjf: memory stream threads
   U64 ms_thread_count;
   OS_Handle *ms_threads;
@@ -992,7 +992,7 @@ internal CTRL_Entity *ctrl_process_from_entity(CTRL_Entity *entity);
 internal CTRL_Entity *ctrl_module_from_process_vaddr(CTRL_Entity *process, U64 vaddr);
 internal DI_Key ctrl_dbgi_key_from_module(CTRL_Entity *module);
 internal CTRL_EntityList ctrl_modules_from_dbgi_key(Arena *arena, CTRL_EntityStore *store, DI_Key *dbgi_key);
-internal CTRL_Entity *ctrl_module_from_thread_candidates(CTRL_EntityStore *store, CTRL_Entity *thread, CTRL_EntityList *candidates);
+// internal CTRL_Entity *ctrl_module_from_thread_candidates(CTRL_EntityStore *store, CTRL_Entity *thread, CTRL_EntityList *candidates);
 internal CTRL_EntityList ctrl_entity_list_from_kind(CTRL_EntityStore *store, CTRL_EntityKind kind);
 internal U64 ctrl_vaddr_from_voff(CTRL_Entity *module, U64 voff);
 internal U64 ctrl_voff_from_vaddr(CTRL_Entity *module, U64 vaddr);
@@ -1041,9 +1041,9 @@ internal B32 ctrl_process_write(CTRL_Handle process, Rng1U64 range, void *src);
 //~ rjf: Thread Register Functions
 
 //- rjf: thread register cache reading
-internal void *ctrl_query_cached_reg_block_from_thread(Arena *arena, CTRL_EntityStore *store, CTRL_Handle handle);
+// internal void *ctrl_query_cached_reg_block_from_thread(Arena *arena, CTRL_EntityStore *store, CTRL_Handle handle);
 internal U64 ctrl_query_cached_tls_root_vaddr_from_thread(CTRL_EntityStore *store, CTRL_Handle handle);
-internal U64 ctrl_query_cached_rip_from_thread(CTRL_EntityStore *store, CTRL_Handle handle);
+// internal U64 ctrl_query_cached_rip_from_thread(CTRL_EntityStore *store, CTRL_Handle handle);
 internal U64 ctrl_query_cached_rsp_from_thread(CTRL_EntityStore *store, CTRL_Handle handle);
 
 //- rjf: thread register writing
@@ -1065,19 +1065,19 @@ internal String8 ctrl_initial_debug_info_path_from_module(Arena *arena, CTRL_Han
 internal CTRL_Unwind ctrl_unwind_deep_copy(Arena *arena, Arch arch, CTRL_Unwind *src);
 
 //- rjf: [x64]
-internal REGS_Reg64 *ctrl_unwind_reg_from_pe_gpr_reg__pe_x64(REGS_RegBlockX64 *regs, PE_UnwindGprRegX64 gpr_reg);
-internal CTRL_UnwindStepResult ctrl_unwind_step__pe_x64(CTRL_EntityStore *store, CTRL_Handle process_handle, CTRL_Handle module_handle, REGS_RegBlockX64 *regs, U64 endt_us);
+//!! internal REGS_Reg64 *ctrl_unwind_reg_from_pe_gpr_reg__pe_x64(REGS_RegBlockX64 *regs, PE_UnwindGprRegX64 gpr_reg);
+//!! internal CTRL_UnwindStepResult ctrl_unwind_step__pe_x64(CTRL_EntityStore *store, CTRL_Handle process_handle, CTRL_Handle module_handle, REGS_RegBlockX64 *regs, U64 endt_us);
 
 //- rjf: abstracted unwind step
-internal CTRL_UnwindStepResult ctrl_unwind_step(CTRL_EntityStore *store, CTRL_Handle process, CTRL_Handle module, Arch arch, void *reg_block, U64 endt_us);
+// internal CTRL_UnwindStepResult ctrl_unwind_step(CTRL_EntityStore *store, CTRL_Handle process, CTRL_Handle module, Arch arch, void *reg_block, U64 endt_us);
 
 //- rjf: abstracted full unwind
-internal CTRL_Unwind ctrl_unwind_from_thread(Arena *arena, CTRL_EntityStore *store, CTRL_Handle thread, U64 endt_us);
+// internal CTRL_Unwind ctrl_unwind_from_thread(Arena *arena, CTRL_EntityStore *store, CTRL_Handle thread, U64 endt_us);
 
 ////////////////////////////////
 //~ rjf: Call Stack Building Functions
 
-internal CTRL_CallStack ctrl_call_stack_from_unwind(Arena *arena, DI_Scope *di_scope, CTRL_Entity *process, CTRL_Unwind *base_unwind);
+// internal CTRL_CallStack ctrl_call_stack_from_unwind(Arena *arena, DI_Scope *di_scope, CTRL_Entity *process, CTRL_Unwind *base_unwind);
 
 ////////////////////////////////
 //~ rjf: Halting All Attached Processes
@@ -1093,8 +1093,8 @@ internal U64 ctrl_mem_gen(void);
 internal U64 ctrl_reg_gen(void);
 
 //- rjf: name -> register/alias hash tables, for eval
-internal E_String2NumMap *ctrl_string2reg_from_arch(Arch arch);
-internal E_String2NumMap *ctrl_string2alias_from_arch(Arch arch);
+//!! internal E_String2NumMap *ctrl_string2reg_from_arch(Arch arch);
+//!! internal E_String2NumMap *ctrl_string2alias_from_arch(Arch arch);
 
 ////////////////////////////////
 //~ rjf: Control-Thread Functions
@@ -1111,8 +1111,8 @@ internal CTRL_EventList ctrl_c2u_pop_events(Arena *arena);
 internal void ctrl_thread__entry_point(void *p);
 
 //- rjf: breakpoint resolution
-internal void ctrl_thread__append_resolved_module_user_bp_traps(Arena *arena, CTRL_Handle process, CTRL_Handle module, CTRL_UserBreakpointList *user_bps, DMN_TrapChunkList *traps_out);
-internal void ctrl_thread__append_resolved_process_user_bp_traps(Arena *arena, CTRL_Handle process, CTRL_UserBreakpointList *user_bps, DMN_TrapChunkList *traps_out);
+// internal void ctrl_thread__append_resolved_module_user_bp_traps(Arena *arena, CTRL_Handle process, CTRL_Handle module, CTRL_UserBreakpointList *user_bps, DMN_TrapChunkList *traps_out);
+// internal void ctrl_thread__append_resolved_process_user_bp_traps(Arena *arena, CTRL_Handle process, CTRL_UserBreakpointList *user_bps, DMN_TrapChunkList *traps_out);
 
 //- rjf: module lifetime open/close work
 internal void ctrl_thread__module_open(CTRL_Handle process, CTRL_Handle module, Rng1U64 vaddr_range, String8 path);
@@ -1122,7 +1122,7 @@ internal void ctrl_thread__module_close(CTRL_Handle module);
 internal DMN_Event *ctrl_thread__next_dmn_event(Arena *arena, DMN_CtrlCtx *ctrl_ctx, CTRL_Msg *msg, DMN_RunCtrls *run_ctrls, CTRL_Spoof *spoof);
 
 //- rjf: eval helpers
-internal B32 ctrl_eval_space_read(void *u, E_Space space, void *out, Rng1U64 vaddr_range);
+//!! internal B32 ctrl_eval_space_read(void *u, E_Space space, void *out, Rng1U64 vaddr_range);
 
 //- rjf: log flusher
 internal void ctrl_thread__flush_info_log(String8 string);

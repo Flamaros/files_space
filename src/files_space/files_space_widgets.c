@@ -17,7 +17,7 @@ rd_loading_overlay(Rng2F32 rect, F32 loading_t, U64 progress_v, U64 progress_v_t
     F32 trail = ui_top_font_size() * 4;
     F32 t = pow_f32(sin_f32((F32)rd_state->time_in_seconds / 1.8f), 2.f);
     F64 v = 1.f - abs_f32(0.5f - t);
-    
+
     // rjf: colors
     Vec4F32 bg_color = rd_rgba_from_theme_color(RD_ThemeColor_BaseBackground);
     Vec4F32 bd_color = rd_rgba_from_theme_color(RD_ThemeColor_FloatingBorder);
@@ -25,10 +25,10 @@ rd_loading_overlay(Rng2F32 rect, F32 loading_t, U64 progress_v, U64 progress_v_t
     bg_color.w *= loading_t;
     bd_color.w *= loading_t;
     hl_color.w *= loading_t;
-    
+
     // rjf: grab animation params
     F32 bg_work_indicator_t = 1.f;
-    
+
     // rjf: build indicator
     UI_CornerRadius(height/3.f)
     {
@@ -46,7 +46,7 @@ rd_loading_overlay(Rng2F32 rect, F32 loading_t, U64 progress_v, U64 progress_v_t
       indicator_rect.x0 = Clamp(indicator_region_rect.x0, indicator_rect.x0, indicator_region_rect.x1);
       indicator_rect.x1 = Clamp(indicator_region_rect.x0, indicator_rect.x1, indicator_region_rect.x1);
       indicator_rect = pad_2f32(indicator_rect, -1.f);
-      
+
       // rjf: does the view have loading *progress* info? -> draw extra progress layer
       if(progress_v != progress_v_target)
       {
@@ -59,7 +59,7 @@ rd_loading_overlay(Rng2F32 rect, F32 loading_t, U64 progress_v, U64 progress_v_t
         ui_set_next_fixed_height(dim_2f32(indicator_region_rect).y);
         ui_build_box_from_key(UI_BoxFlag_DrawBackground|UI_BoxFlag_FloatingX|UI_BoxFlag_FloatingY, ui_key_zero());
       }
-      
+
       // rjf: fill
       ui_set_next_palette(ui_build_palette(ui_top_palette(), .background = hl_color));
       ui_set_next_fixed_x(indicator_rect.x0);
@@ -67,7 +67,7 @@ rd_loading_overlay(Rng2F32 rect, F32 loading_t, U64 progress_v, U64 progress_v_t
       ui_set_next_fixed_width(dim_2f32(indicator_rect).x);
       ui_set_next_fixed_height(dim_2f32(indicator_rect).y);
       ui_build_box_from_key(UI_BoxFlag_DrawBackground|UI_BoxFlag_FloatingX|UI_BoxFlag_FloatingY, ui_key_zero());
-      
+
       // rjf: animated bar
       ui_set_next_palette(ui_build_palette(ui_top_palette(), .border = bd_color, .background = bg_color));
       ui_set_next_fixed_x(indicator_region_rect.x0);
@@ -77,7 +77,7 @@ rd_loading_overlay(Rng2F32 rect, F32 loading_t, U64 progress_v, U64 progress_v_t
       UI_Box *box = ui_build_box_from_stringf(UI_BoxFlag_DrawBackground|UI_BoxFlag_DrawBorder|UI_BoxFlag_FloatingX|UI_BoxFlag_FloatingY|UI_BoxFlag_Clickable, "bg_system_status");
       UI_Signal sig = ui_signal_from_box(box);
     }
-    
+
     // rjf: build background
     UI_WidthFill UI_HeightFill
     {
@@ -96,7 +96,7 @@ rd_cmd_binding_buttons(String8 name)
 {
   Temp scratch = scratch_begin(0, 0);
   RD_BindingList bindings = rd_bindings_from_name(scratch.arena, name);
-  
+
   //- rjf: build buttons for each binding
   for(RD_BindingNode *n = bindings.first; n != 0; n = n->next)
   {
@@ -105,7 +105,7 @@ rd_cmd_binding_buttons(String8 name)
                                              str8_match(rd_state->bind_change_cmd_name, name, 0) &&
                                              rd_state->bind_change_binding.key == binding.key &&
                                              rd_state->bind_change_binding.modifiers == binding.modifiers);
-    
+
     //- rjf: grab all conflicts
     String8List specs_with_binding = rd_cmd_name_list_from_binding(scratch.arena, binding);
     B32 has_conflicts = 0;
@@ -117,7 +117,7 @@ rd_cmd_binding_buttons(String8 name)
         break;
       }
     }
-    
+
     //- rjf: form binding string
     String8 keybinding_str = {0};
     {
@@ -135,7 +135,7 @@ rd_cmd_binding_buttons(String8 name)
         keybinding_str = str8_lit("- no binding -");
       }
     }
-    
+
     //- rjf: form color palette
     UI_Palette *palette = ui_top_palette();
     if(has_conflicts || rebinding_active_for_this_binding)
@@ -154,7 +154,7 @@ rd_cmd_binding_buttons(String8 name)
         palette->colors[UI_ColorCode_Background].w *= 0.25f;
       }
     }
-    
+
     //- rjf: build box
     ui_set_next_hover_cursor(OS_Cursor_HandPoint);
     ui_set_next_text_alignment(UI_TextAlign_Center);
@@ -168,7 +168,7 @@ rd_cmd_binding_buttons(String8 name)
                                             UI_BoxFlag_DrawBorder|
                                             UI_BoxFlag_DrawBackground,
                                             "%S###bind_btn_%S_%x_%x", keybinding_str, name, binding.key, binding.modifiers);
-    
+
     //- rjf: interaction
     UI_Signal sig = ui_signal_from_box(box);
     {
@@ -191,7 +191,7 @@ rd_cmd_binding_buttons(String8 name)
       {
         rd_state->bind_change_active = 0;
       }
-      
+
       // rjf: hover w/ conflicts => show conflicts
       if(ui_hovering(sig) && has_conflicts) UI_Tooltip
       {
@@ -206,7 +206,7 @@ rd_cmd_binding_buttons(String8 name)
         }
       }
     }
-    
+
     //- rjf: delete button
     if(rebinding_active_for_this_binding)
       UI_PrefWidth(ui_em(2.5f, 1.f))
@@ -223,11 +223,11 @@ rd_cmd_binding_buttons(String8 name)
         rd_state->bind_change_active = 0;
       }
     }
-    
+
     //- rjf: space
     ui_spacer(ui_em(1.f, 1.f));
   }
-  
+
   //- rjf: build "add new binding" button
   RD_Font(RD_FontSlot_Icons)
   {
@@ -271,7 +271,7 @@ rd_cmd_binding_buttons(String8 name)
       }
     }
   }
-  
+
   scratch_end(scratch);
 }
 
@@ -485,60 +485,60 @@ rd_entity_tooltips(RD_Entity *entity)
         UI_PrefWidth(ui_text_dim(10, 1)) ui_label(arch_str);
       }
       ui_spacer(ui_em(1.5f, 1.f));
-      DI_Scope *di_scope = di_scope_open();
-      CTRL_Entity *process = ctrl_entity_ancestor_from_kind(entity_ctrl, CTRL_EntityKind_Process);
-      CTRL_Unwind base_unwind = d_query_cached_unwind_from_thread(entity_ctrl);
-      CTRL_CallStack rich_unwind = ctrl_call_stack_from_unwind(scratch.arena, di_scope, process, &base_unwind);
-      for(U64 idx = 0; idx < rich_unwind.concrete_frame_count; idx += 1)
-      {
-        CTRL_CallStackFrame *f = &rich_unwind.frames[idx];
-        RDI_Parsed *rdi = f->rdi;
-        RDI_Procedure *procedure = f->procedure;
-        U64 rip_vaddr = regs_rip_from_arch_block(entity->arch, f->regs);
-        CTRL_Entity *module = ctrl_module_from_process_vaddr(process, rip_vaddr);
-        String8 module_name = module == &ctrl_entity_nil ? str8_lit("???") : str8_skip_last_slash(module->string);
-        
-        // rjf: inline frames
-        for(CTRL_CallStackInlineFrame *fin = f->last_inline_frame; fin != 0; fin = fin->prev)
-          UI_PrefWidth(ui_children_sum(1)) UI_Row
-        {
-          String8 name = {0};
-          name.str = rdi_string_from_idx(rdi, fin->inline_site->name_string_idx, &name.size);
-          RD_Font(RD_FontSlot_Code) UI_PrefWidth(ui_em(18.f, 1.f)) UI_FlagsAdd(UI_BoxFlag_DrawTextWeak) ui_labelf("0x%I64x", rip_vaddr);
-          RD_Font(RD_FontSlot_Code) UI_FlagsAdd(UI_BoxFlag_DrawTextWeak) UI_PrefWidth(ui_text_dim(10, 1)) ui_label(str8_lit("[inlined]"));
-          if(name.size != 0)
-          {
-            RD_Font(RD_FontSlot_Code) UI_PrefWidth(ui_text_dim(10, 1))
-            {
-              rd_code_label(1.f, 0, rd_rgba_from_theme_color(RD_ThemeColor_CodeSymbol), name);
-            }
-          }
-          else
-          {
-            RD_Font(RD_FontSlot_Code) UI_FlagsAdd(UI_BoxFlag_DrawTextWeak) UI_PrefWidth(ui_text_dim(10, 1)) ui_labelf("[??? in %S]", module_name);
-          }
-        }
-        
-        // rjf: concrete frame
-        UI_PrefWidth(ui_children_sum(1)) UI_Row
-        {
-          String8 name = {0};
-          name.str = rdi_name_from_procedure(rdi, procedure, &name.size);
-          RD_Font(RD_FontSlot_Code) UI_PrefWidth(ui_em(18.f, 1.f)) UI_FlagsAdd(UI_BoxFlag_DrawTextWeak) ui_labelf("0x%I64x", rip_vaddr);
-          if(name.size != 0)
-          {
-            RD_Font(RD_FontSlot_Code) UI_PrefWidth(ui_text_dim(10, 1))
-            {
-              rd_code_label(1.f, 0, rd_rgba_from_theme_color(RD_ThemeColor_CodeSymbol), name);
-            }
-          }
-          else
-          {
-            RD_Font(RD_FontSlot_Code) UI_FlagsAdd(UI_BoxFlag_DrawTextWeak) UI_PrefWidth(ui_text_dim(10, 1)) ui_labelf("[??? in %S]", module_name);
-          }
-        }
-      }
-      di_scope_close(di_scope);
+      // DI_Scope *di_scope = di_scope_open();
+      // CTRL_Entity *process = ctrl_entity_ancestor_from_kind(entity_ctrl, CTRL_EntityKind_Process);
+      // CTRL_Unwind base_unwind = d_query_cached_unwind_from_thread(entity_ctrl);
+      // CTRL_CallStack rich_unwind = ctrl_call_stack_from_unwind(scratch.arena, di_scope, process, &base_unwind);
+      // for(U64 idx = 0; idx < rich_unwind.concrete_frame_count; idx += 1)
+      // {
+      //   CTRL_CallStackFrame *f = &rich_unwind.frames[idx];
+      //   RDI_Parsed *rdi = f->rdi;
+      //   RDI_Procedure *procedure = f->procedure;
+      //   U64 rip_vaddr = regs_rip_from_arch_block(entity->arch, f->regs);
+      //   CTRL_Entity *module = ctrl_module_from_process_vaddr(process, rip_vaddr);
+      //   String8 module_name = module == &ctrl_entity_nil ? str8_lit("???") : str8_skip_last_slash(module->string);
+
+      //   // rjf: inline frames
+      //   for(CTRL_CallStackInlineFrame *fin = f->last_inline_frame; fin != 0; fin = fin->prev)
+      //     UI_PrefWidth(ui_children_sum(1)) UI_Row
+      //   {
+      //     String8 name = {0};
+      //     name.str = rdi_string_from_idx(rdi, fin->inline_site->name_string_idx, &name.size);
+      //     RD_Font(RD_FontSlot_Code) UI_PrefWidth(ui_em(18.f, 1.f)) UI_FlagsAdd(UI_BoxFlag_DrawTextWeak) ui_labelf("0x%I64x", rip_vaddr);
+      //     RD_Font(RD_FontSlot_Code) UI_FlagsAdd(UI_BoxFlag_DrawTextWeak) UI_PrefWidth(ui_text_dim(10, 1)) ui_label(str8_lit("[inlined]"));
+      //     if(name.size != 0)
+      //     {
+      //       RD_Font(RD_FontSlot_Code) UI_PrefWidth(ui_text_dim(10, 1))
+      //       {
+      //         rd_code_label(1.f, 0, rd_rgba_from_theme_color(RD_ThemeColor_CodeSymbol), name);
+      //       }
+      //     }
+      //     else
+      //     {
+      //       RD_Font(RD_FontSlot_Code) UI_FlagsAdd(UI_BoxFlag_DrawTextWeak) UI_PrefWidth(ui_text_dim(10, 1)) ui_labelf("[??? in %S]", module_name);
+      //     }
+      //   }
+
+      //   // rjf: concrete frame
+      //   UI_PrefWidth(ui_children_sum(1)) UI_Row
+      //   {
+      //     String8 name = {0};
+      //     name.str = rdi_name_from_procedure(rdi, procedure, &name.size);
+      //     RD_Font(RD_FontSlot_Code) UI_PrefWidth(ui_em(18.f, 1.f)) UI_FlagsAdd(UI_BoxFlag_DrawTextWeak) ui_labelf("0x%I64x", rip_vaddr);
+      //     if(name.size != 0)
+      //     {
+      //       RD_Font(RD_FontSlot_Code) UI_PrefWidth(ui_text_dim(10, 1))
+      //       {
+      //         rd_code_label(1.f, 0, rd_rgba_from_theme_color(RD_ThemeColor_CodeSymbol), name);
+      //       }
+      //     }
+      //     else
+      //     {
+      //       RD_Font(RD_FontSlot_Code) UI_FlagsAdd(UI_BoxFlag_DrawTextWeak) UI_PrefWidth(ui_text_dim(10, 1)) ui_labelf("[??? in %S]", module_name);
+      //     }
+      //   }
+      // }
+      // di_scope_close(di_scope);
     }break;
     case RD_EntityKind_Breakpoint: UI_Flags(0)
       UI_Tooltip UI_PrefWidth(ui_text_dim(10, 1))
@@ -623,7 +623,7 @@ rd_entity_desc_button(RD_Entity *entity, FuzzyMatchRangeList *name_matches, Stri
                                           UI_BoxFlag_DrawHotEffects|
                                           UI_BoxFlag_DrawActiveEffects,
                                           "entity_ref_button_%p", entity);
-  
+
   //- rjf: build contents
   UI_Parent(box) UI_PrefWidth(ui_text_dim(10, 0)) UI_Padding(ui_em(1.f, 1.f))
   {
@@ -730,7 +730,7 @@ rd_entity_desc_button(RD_Entity *entity, FuzzyMatchRangeList *name_matches, Stri
       }
     }
   }
-  
+
   //- rjf: do interaction on main box
   UI_Signal sig = ui_signal_from_box(box);
   {
@@ -738,13 +738,13 @@ rd_entity_desc_button(RD_Entity *entity, FuzzyMatchRangeList *name_matches, Stri
     {
       rd_entity_tooltips(entity);
     }
-    
+
     // rjf: click => fastpath for this entity
     if(ui_clicked(sig))
     {
       // TODO(rjf): rd_cmd(RD_CmdKind_EntityRefFastPath, .entity = rd_handle_from_entity(entity));
     }
-    
+
     // rjf: right-click => context menu for this entity
     else if(ui_right_clicked(sig))
     {
@@ -753,7 +753,7 @@ rd_entity_desc_button(RD_Entity *entity, FuzzyMatchRangeList *name_matches, Stri
       // ui_ctx_menu_open(rd_state->entity_ctx_menu_key, sig.box->key, v2f32(0, sig.box->rect.y1 - sig.box->rect.y0));
       // window->entity_ctx_menu_entity = handle;
     }
-    
+
     // rjf: drag+drop
     else if(ui_dragging(sig) && !contains_2f32(box->rect, ui_mouse()))
     {
@@ -770,7 +770,7 @@ rd_src_loc_button(String8 file_path, TxtPt point)
 {
   Temp scratch = scratch_begin(0, 0);
   String8 filename = str8_skip_last_slash(file_path);
-  
+
   // rjf: build main box
   ui_set_next_hover_cursor(OS_Cursor_HandPoint);
   UI_Box *box = ui_build_box_from_stringf(UI_BoxFlag_Clickable|
@@ -780,7 +780,7 @@ rd_src_loc_button(String8 file_path, TxtPt point)
                                           UI_BoxFlag_DrawActiveEffects,
                                           "file_loc_button_%S", file_path);
   UI_Signal sig = ui_signal_from_box(box);
-  
+
   // rjf: build contents
   UI_Parent(box) UI_PrefWidth(ui_text_dim(10, 0))
   {
@@ -792,13 +792,13 @@ rd_src_loc_button(String8 file_path, TxtPt point)
       ui_label(rd_icon_kind_text_table[icon]);
     ui_labelf("%S:%I64d:%I64d", filename, point.line, point.column);
   }
-  
+
   // rjf: click => find code location
   if(ui_clicked(sig))
   {
     rd_cmd(RD_CmdKind_FindCodeLocation, .file_path = file_path, .cursor = point);
   }
-  
+
   // rjf: hover => show full path
   else if(ui_hovering(sig) && !ui_dragging(sig)) UI_Tooltip
   {
@@ -826,7 +826,7 @@ struct RD_ThreadBoxDrawExtData
 internal UI_BOX_CUSTOM_DRAW(rd_thread_box_draw_extensions)
 {
   RD_ThreadBoxDrawExtData *u = (RD_ThreadBoxDrawExtData *)box->custom_draw_user_data;
-  
+
   // rjf: draw line before next-to-execute line
   if(u->do_lines)
   {
@@ -838,7 +838,7 @@ internal UI_BOX_CUSTOM_DRAW(rd_thread_box_draw_extensions)
                                  0, 0, 1);
     inst->colors[Corner_00] = inst->colors[Corner_01] = u->thread_color;
   }
-  
+
   // rjf: draw 'progress bar', showing thread's progress through the line's address range
   if(u->progress_t > 0)
   {
@@ -851,7 +851,7 @@ internal UI_BOX_CUSTOM_DRAW(rd_thread_box_draw_extensions)
             weak_thread_color,
             0, 0, 1);
   }
-  
+
   // rjf: draw rich hover fill
   if(u->hover_t > 0.001f)
   {
@@ -865,7 +865,7 @@ internal UI_BOX_CUSTOM_DRAW(rd_thread_box_draw_extensions)
                                  0, 0, 1);
     inst->colors[Corner_00] = inst->colors[Corner_01] = weak_thread_color;
   }
-  
+
   // rjf: draw slight fill on selected thread
   if(u->is_selected && u->do_glow)
   {
@@ -879,7 +879,7 @@ internal UI_BOX_CUSTOM_DRAW(rd_thread_box_draw_extensions)
                                  0, 0, 1);
     inst->colors[Corner_00] = inst->colors[Corner_01] = weak_thread_color;
   }
-  
+
   // rjf: locked icon on frozen threads
   if(u->is_frozen)
   {
@@ -908,7 +908,7 @@ struct RD_BreakpointBoxDrawExtData
 internal UI_BOX_CUSTOM_DRAW(rd_bp_box_draw_extensions)
 {
   RD_BreakpointBoxDrawExtData *u = (RD_BreakpointBoxDrawExtData *)box->custom_draw_user_data;
-  
+
   // rjf: draw line before next-to-execute line
   if(u->do_lines)
   {
@@ -920,7 +920,7 @@ internal UI_BOX_CUSTOM_DRAW(rd_bp_box_draw_extensions)
                                  0, 0, 1.f);
     inst->colors[Corner_00] = inst->colors[Corner_01] = u->color;
   }
-  
+
   // rjf: draw rich hover fill
   if(u->hover_t > 0.001f)
   {
@@ -934,7 +934,7 @@ internal UI_BOX_CUSTOM_DRAW(rd_bp_box_draw_extensions)
                                  0, 0, 1);
     inst->colors[Corner_00] = inst->colors[Corner_01] = weak_color;
   }
-  
+
   // rjf: draw slight fill
   if(u->do_glow)
   {
@@ -948,7 +948,7 @@ internal UI_BOX_CUSTOM_DRAW(rd_bp_box_draw_extensions)
                                  0, 0, 1);
     inst->colors[Corner_00] = inst->colors[Corner_01] = weak_thread_color;
   }
-  
+
   // rjf: draw remaps
   if(u->remap_px_delta != 0)
   {
@@ -1004,7 +1004,7 @@ rd_code_slice(RD_CodeSliceParams *params, TxtPt *cursor, TxtPt *mark, S64 *prefe
   F32 line_num_padding_px = ui_top_font_size()*1.f;
   F32 entity_alive_t_rate = (1 - pow_f32(2, (-30.f * rd_state->frame_dt)));
   F32 entity_hover_t_rate = rd_setting_val_from_code(RD_SettingCode_HoverAnimations).s32 ? (1 - pow_f32(2, (-20.f * rd_state->frame_dt))) : 1.f;
-  
+
   //////////////////////////////
   //- rjf: build top-level container
   //
@@ -1024,7 +1024,7 @@ rd_code_slice(RD_CodeSliceParams *params, TxtPt *cursor, TxtPt *mark, S64 *prefe
       }
     }
   }
-  
+
   //////////////////////////////
   //- rjf: build per-line background colors
   //
@@ -1046,7 +1046,7 @@ rd_code_slice(RD_CodeSliceParams *params, TxtPt *cursor, TxtPt *mark, S64 *prefe
       }
     }
   }
-  
+
   //////////////////////////////
   //- rjf: build priority margin
   //
@@ -1091,7 +1091,7 @@ rd_code_slice(RD_CodeSliceParams *params, TxtPt *cursor, TxtPt *mark, S64 *prefe
             CTRL_Entity *module = ctrl_module_from_process_vaddr(process, thread_rip_vaddr);
             DI_Key dbgi_key = ctrl_dbgi_key_from_module(module);
             U64 thread_rip_voff = ctrl_voff_from_vaddr(module, thread_rip_vaddr);
-            
+
             // rjf: thread info => color
             Vec4F32 color = rd_rgba_from_ctrl_entity(thread);
             {
@@ -1115,7 +1115,7 @@ rd_code_slice(RD_CodeSliceParams *params, TxtPt *cursor, TxtPt *mark, S64 *prefe
                 color.w *= 0.8f;
               }
             }
-            
+
             // rjf: build thread box
             ui_set_next_hover_cursor(OS_Cursor_UpDownLeftRight);
             ui_set_next_font(rd_font_from_slot(RD_FontSlot_Icons));
@@ -1132,7 +1132,7 @@ rd_code_slice(RD_CodeSliceParams *params, TxtPt *cursor, TxtPt *mark, S64 *prefe
                                                        thread_box_key);
             ui_box_equip_display_string(thread_box, rd_icon_kind_text_table[RD_IconKind_RightArrow]);
             UI_Signal thread_sig = ui_signal_from_box(thread_box);
-            
+
             // rjf: custom draw
             {
               RD_Regs *hover_regs = rd_get_hover_regs();
@@ -1147,7 +1147,7 @@ rd_code_slice(RD_CodeSliceParams *params, TxtPt *cursor, TxtPt *mark, S64 *prefe
               u->do_lines     = rd_setting_val_from_code(RD_SettingCode_ThreadLines).s32;
               u->do_glow      = rd_setting_val_from_code(RD_SettingCode_ThreadGlow).s32;
               ui_box_equip_custom_draw(thread_box, rd_thread_box_draw_extensions, u);
-              
+
               // rjf: fill out progress t (progress into range of current line's
               // voff range)
               if(params->line_infos[line_idx].first != 0)
@@ -1173,8 +1173,8 @@ rd_code_slice(RD_CodeSliceParams *params, TxtPt *cursor, TxtPt *mark, S64 *prefe
                 }
               }
             }
-            
-            // rjf: interactions 
+
+            // rjf: interactions
             if(ui_hovering(thread_sig) && !rd_drag_is_active())
             {
               RD_RegsScope(.thread = thread->handle) rd_set_hover_regs(RD_RegSlot_Thread);
@@ -1192,7 +1192,7 @@ rd_code_slice(RD_CodeSliceParams *params, TxtPt *cursor, TxtPt *mark, S64 *prefe
       }
     }
   }
-  
+
   //////////////////////////////
   //- rjf: build catchall margin
   //
@@ -1239,7 +1239,7 @@ rd_code_slice(RD_CodeSliceParams *params, TxtPt *cursor, TxtPt *mark, S64 *prefe
             CTRL_Entity *module = ctrl_module_from_process_vaddr(process, thread_rip_vaddr);
             DI_Key dbgi_key = ctrl_dbgi_key_from_module(module);
             U64 thread_rip_voff = ctrl_voff_from_vaddr(module, thread_rip_vaddr);
-            
+
             // rjf: thread info => color
             Vec4F32 color = rd_rgba_from_ctrl_entity(thread);
             {
@@ -1263,7 +1263,7 @@ rd_code_slice(RD_CodeSliceParams *params, TxtPt *cursor, TxtPt *mark, S64 *prefe
                 color.w *= 0.8f;
               }
             }
-            
+
             // rjf: build thread box
             ui_set_next_hover_cursor(OS_Cursor_UpDownLeftRight);
             ui_set_next_font(rd_font_from_slot(RD_FontSlot_Icons));
@@ -1280,7 +1280,7 @@ rd_code_slice(RD_CodeSliceParams *params, TxtPt *cursor, TxtPt *mark, S64 *prefe
                                                        thread_box_key);
             ui_box_equip_display_string(thread_box, rd_icon_kind_text_table[RD_IconKind_RightArrow]);
             UI_Signal thread_sig = ui_signal_from_box(thread_box);
-            
+
             // rjf: custom draw
             {
               RD_Regs *hover_regs = rd_get_hover_regs();
@@ -1293,7 +1293,7 @@ rd_code_slice(RD_CodeSliceParams *params, TxtPt *cursor, TxtPt *mark, S64 *prefe
               u->is_selected  = (thread == selected_thread);
               u->is_frozen    = !!thread->is_frozen;
               ui_box_equip_custom_draw(thread_box, rd_thread_box_draw_extensions, u);
-              
+
               // rjf: fill out progress t (progress into range of current line's
               // voff range)
               if(params->line_vaddrs[line_idx] == 0 && params->line_infos[line_idx].first != 0)
@@ -1319,7 +1319,7 @@ rd_code_slice(RD_CodeSliceParams *params, TxtPt *cursor, TxtPt *mark, S64 *prefe
                 }
               }
             }
-            
+
             // rjf: interactions
             if(ui_hovering(thread_sig) && !rd_drag_is_active())
             {
@@ -1339,7 +1339,7 @@ rd_code_slice(RD_CodeSliceParams *params, TxtPt *cursor, TxtPt *mark, S64 *prefe
               ui_kill_action();
             }
           }
-          
+
           //- rjf: build margin breakpoint ui
           for(RD_EntityNode *n = line_bps.first; n != 0; n = n->next)
           {
@@ -1353,7 +1353,7 @@ rd_code_slice(RD_CodeSliceParams *params, TxtPt *cursor, TxtPt *mark, S64 *prefe
             {
               bp_color = v4f32(bp_color.x * 0.6f, bp_color.y * 0.6f, bp_color.z * 0.6f, bp_color.w * 0.6f);
             }
-            
+
             // rjf: prep custom rendering data
             RD_BreakpointBoxDrawExtData *bp_draw = push_array(ui_build_arena(), RD_BreakpointBoxDrawExtData, 1);
             {
@@ -1378,7 +1378,7 @@ rd_code_slice(RD_CodeSliceParams *params, TxtPt *cursor, TxtPt *mark, S64 *prefe
                 }
               }
             }
-            
+
             // rjf: build box for breakpoint
             ui_set_next_font(rd_font_from_slot(RD_FontSlot_Icons));
             ui_set_next_font_size(params->font_size * 1.f);
@@ -1394,38 +1394,38 @@ rd_code_slice(RD_CodeSliceParams *params, TxtPt *cursor, TxtPt *mark, S64 *prefe
                                                        bp);
             ui_box_equip_custom_draw(bp_box, rd_bp_box_draw_extensions, bp_draw);
             UI_Signal bp_sig = ui_signal_from_box(bp_box);
-            
+
             // rjf: bp hovering
             if(ui_hovering(bp_sig) && !rd_drag_is_active())
             {
               RD_RegsScope(.entity = rd_handle_from_entity(bp)) rd_set_hover_regs(RD_RegSlot_Entity);
             }
-            
+
             // rjf: shift+click => enable breakpoint
             if(ui_clicked(bp_sig) && bp_sig.event_flags & OS_Modifier_Shift)
             {
               rd_cmd(bp->disabled ? RD_CmdKind_EnableEntity : RD_CmdKind_DisableEntity, .entity = rd_handle_from_entity(bp));
             }
-            
+
             // rjf: click => remove breakpoint
             if(ui_clicked(bp_sig) && bp_sig.event_flags == 0)
             {
               rd_cmd(RD_CmdKind_RemoveEntity, .entity = rd_handle_from_entity(bp));
             }
-            
+
             // rjf: drag start
             if(ui_dragging(bp_sig) && !contains_2f32(bp_box->rect, ui_mouse()))
             {
               RD_RegsScope(.entity = rd_handle_from_entity(bp)) rd_drag_begin(RD_RegSlot_Entity);
             }
-            
+
             // rjf: bp right-click menu
             if(ui_right_clicked(bp_sig))
             {
               RD_RegsScope(.entity = rd_handle_from_entity(bp)) rd_open_ctx_menu(bp_box->key, v2f32(0, bp_box->rect.y1-bp_box->rect.y0), RD_RegSlot_Entity);
             }
           }
-          
+
           //- rjf: build margin watch pin ui
           for(RD_EntityNode *n = line_pins.first; n != 0; n = n->next)
           {
@@ -1435,7 +1435,7 @@ rd_code_slice(RD_CodeSliceParams *params, TxtPt *cursor, TxtPt *mark, S64 *prefe
             {
               color = rd_rgba_from_entity(pin);
             }
-            
+
             // rjf: build box for watch
             ui_set_next_font(rd_font_from_slot(RD_FontSlot_Icons));
             ui_set_next_font_size(params->font_size * 1.f);
@@ -1450,25 +1450,25 @@ rd_code_slice(RD_CodeSliceParams *params, TxtPt *cursor, TxtPt *mark, S64 *prefe
                                                         rd_icon_kind_text_table[RD_IconKind_Pin],
                                                         pin);
             UI_Signal pin_sig = ui_signal_from_box(pin_box);
-            
+
             // rjf: watch hovering
             if(ui_hovering(pin_sig) && !rd_drag_is_active())
             {
               RD_RegsScope(.entity = rd_handle_from_entity(pin)) rd_set_hover_regs(RD_RegSlot_Entity);
             }
-            
+
             // rjf: click => remove pin
             if(ui_clicked(pin_sig))
             {
               rd_cmd(RD_CmdKind_RemoveEntity, .entity = rd_handle_from_entity(pin));
             }
-            
+
             // rjf: drag start
             if(ui_dragging(pin_sig) && !contains_2f32(pin_box->rect, ui_mouse()))
             {
               RD_RegsScope(.entity = rd_handle_from_entity(pin)) rd_drag_begin(RD_RegSlot_Entity);
             }
-            
+
             // rjf: watch right-click menu
             if(ui_right_clicked(pin_sig))
             {
@@ -1476,7 +1476,7 @@ rd_code_slice(RD_CodeSliceParams *params, TxtPt *cursor, TxtPt *mark, S64 *prefe
             }
           }
         }
-        
+
         // rjf: empty margin interaction
         UI_Signal line_margin_sig = ui_signal_from_box(line_margin_box);
         if(ui_clicked(line_margin_sig))
@@ -1489,7 +1489,7 @@ rd_code_slice(RD_CodeSliceParams *params, TxtPt *cursor, TxtPt *mark, S64 *prefe
       }
     }
   }
-  
+
   //////////////////////////////
   //- rjf: build line numbers
   //
@@ -1515,7 +1515,7 @@ rd_code_slice(RD_CodeSliceParams *params, TxtPt *cursor, TxtPt *mark, S64 *prefe
       {
         Vec4F32 text_color = (select_rng.min.line <= line_num && line_num <= select_rng.max.line) ? active_color : inactive_color;
         Vec4F32 bg_color = v4f32(0, 0, 0, 0);
-        
+
         // rjf: line info on this line -> adjust bg color to visualize
         B32 has_line_info = 0;
         {
@@ -1540,14 +1540,14 @@ rd_code_slice(RD_CodeSliceParams *params, TxtPt *cursor, TxtPt *mark, S64 *prefe
             bg_color = color;
           }
         }
-        
+
         // rjf: build line num box
         ui_set_next_palette(ui_build_palette(ui_top_palette(), .text = text_color, .background = bg_color));
         ui_build_box_from_stringf(UI_BoxFlag_DrawText|(UI_BoxFlag_DrawBackground*!!has_line_info), "%I64u##line_num", line_num);
       }
     }
   }
-  
+
   //////////////////////////////
   //- rjf: build background for line numbers & margins
   //
@@ -1560,7 +1560,7 @@ rd_code_slice(RD_CodeSliceParams *params, TxtPt *cursor, TxtPt *mark, S64 *prefe
       ui_build_box_from_key(UI_BoxFlag_DrawBackgroundBlur|UI_BoxFlag_DrawBackground|UI_BoxFlag_DrawDropShadow, ui_key_zero());
     }
   }
-  
+
   //////////////////////////////
   //- rjf: build main text container box, for mouse interaction on both lines & line numbers
   //
@@ -1571,7 +1571,7 @@ rd_code_slice(RD_CodeSliceParams *params, TxtPt *cursor, TxtPt *mark, S64 *prefe
     ui_set_next_pref_height(ui_px(params->line_height_px*(dim_1s64(params->line_num_range)+1), 1.f));
     text_container_box = ui_build_box_from_string(UI_BoxFlag_Clickable*!!(params->flags & RD_CodeSliceFlag_Clickable), str8_lit("text_container"));
   }
-  
+
   //////////////////////////////
   //- rjf: determine starting offset for each at line, at which we can begin placing extra info to the right
   //
@@ -1587,7 +1587,7 @@ rd_code_slice(RD_CodeSliceParams *params, TxtPt *cursor, TxtPt *mark, S64 *prefe
       line_extras_off[line_idx] = Max(line_text_dim, params->font_size*50);
     }
   }
-  
+
   //////////////////////////////
   //- rjf: produce per-line extra annotation containers
   //
@@ -1604,7 +1604,7 @@ rd_code_slice(RD_CodeSliceParams *params, TxtPt *cursor, TxtPt *mark, S64 *prefe
       line_extras_boxes[line_idx] = ui_build_box_from_stringf(0, "###extras_%I64x", line_idx);
     }
   }
-  
+
   //////////////////////////////
   //- rjf: build exception annotations
   //
@@ -1639,7 +1639,7 @@ rd_code_slice(RD_CodeSliceParams *params, TxtPt *cursor, TxtPt *mark, S64 *prefe
       }
     }
   }
-  
+
   //////////////////////////////
   //- rjf: build watch pin annotations
   //
@@ -1659,59 +1659,59 @@ rd_code_slice(RD_CodeSliceParams *params, TxtPt *cursor, TxtPt *mark, S64 *prefe
       {
         for(RD_EntityNode *n = pins.first; n != 0; n = n->next)
         {
-          RD_Entity *pin = n->entity;
-          String8 pin_expr = pin->string;
-          E_Eval eval = e_eval_from_string(scratch.arena, pin_expr);
-          String8 eval_string = {0};
-          if(!e_type_key_match(e_type_key_zero(), eval.type_key))
-          {
-            EV_ViewRuleList view_rules = {0};
-            eval_string = rd_value_string_from_eval(scratch.arena, EV_StringFlag_ReadOnlyDisplayRules, 10, params->font, params->font_size, params->font_size*60.f, eval, 0, &view_rules);
-          }
-          ui_spacer(ui_em(1.5f, 1.f));
-          ui_set_next_pref_width(ui_children_sum(1));
-          UI_Key pin_box_key = ui_key_from_stringf(ui_key_zero(), "###pin_%p", pin);
-          UI_Box *pin_box = ui_build_box_from_key(UI_BoxFlag_AnimatePos|
-                                                  UI_BoxFlag_Clickable*!!(params->flags & RD_CodeSliceFlag_Clickable)|
-                                                  UI_BoxFlag_DrawHotEffects|
-                                                  UI_BoxFlag_DrawBorder, pin_box_key);
-          UI_Parent(pin_box) UI_PrefWidth(ui_text_dim(10, 1))
-          {
-            Vec4F32 pin_color = rd_rgba_from_theme_color(RD_ThemeColor_CodeDefault);
-            if(pin->flags & RD_EntityFlag_HasColor)
-            {
-              pin_color = rd_rgba_from_entity(pin);
-            }
-            UI_PrefWidth(ui_em(1.5f, 1.f))
-              RD_Font(RD_FontSlot_Icons)
-              UI_Palette(ui_build_palette(ui_top_palette(), .text = pin_color))
-              UI_TextAlignment(UI_TextAlign_Center)
-              UI_Flags(UI_BoxFlag_DisableTextTrunc)
-            {
-              UI_Signal sig = ui_buttonf("%S###pin_nub", rd_icon_kind_text_table[RD_IconKind_Pin]);
-              if(ui_dragging(sig) && !contains_2f32(sig.box->rect, ui_mouse()))
-              {
-                RD_RegsScope(.entity = rd_handle_from_entity(pin)) rd_drag_begin(RD_RegSlot_Entity);
-              }
-              if(ui_right_clicked(sig))
-              {
-                RD_RegsScope(.entity = rd_handle_from_entity(pin)) rd_open_ctx_menu(sig.box->key, v2f32(0, sig.box->rect.y1-sig.box->rect.y0), RD_RegSlot_Entity);
-              }
-            }
-            rd_code_label(0.8f, 1, rd_rgba_from_theme_color(RD_ThemeColor_CodeDefault), pin_expr);
-            rd_code_label(0.6f, 1, rd_rgba_from_theme_color(RD_ThemeColor_CodeDefault), eval_string);
-          }
-          UI_Signal pin_sig = ui_signal_from_box(pin_box);
-          if(ui_key_match(pin_box_key, ui_hot_key()))
-          {
-            rd_set_hover_eval(v2f32(pin_box->rect.x0, pin_box->rect.y1-2.f), str8_zero(), txt_pt(1, 1), 0, pin_expr);
-          }
+          // RD_Entity *pin = n->entity;
+          // String8 pin_expr = pin->string;
+          // E_Eval eval = e_eval_from_string(scratch.arena, pin_expr);
+          // String8 eval_string = {0};
+          // if(!e_type_key_match(e_type_key_zero(), eval.type_key))
+          // {
+          //   EV_ViewRuleList view_rules = {0};
+          //   eval_string = rd_value_string_from_eval(scratch.arena, EV_StringFlag_ReadOnlyDisplayRules, 10, params->font, params->font_size, params->font_size*60.f, eval, 0, &view_rules);
+          // }
+          // ui_spacer(ui_em(1.5f, 1.f));
+          // ui_set_next_pref_width(ui_children_sum(1));
+          // UI_Key pin_box_key = ui_key_from_stringf(ui_key_zero(), "###pin_%p", pin);
+          // UI_Box *pin_box = ui_build_box_from_key(UI_BoxFlag_AnimatePos|
+          //                                         UI_BoxFlag_Clickable*!!(params->flags & RD_CodeSliceFlag_Clickable)|
+          //                                         UI_BoxFlag_DrawHotEffects|
+          //                                         UI_BoxFlag_DrawBorder, pin_box_key);
+          // UI_Parent(pin_box) UI_PrefWidth(ui_text_dim(10, 1))
+          // {
+          //   Vec4F32 pin_color = rd_rgba_from_theme_color(RD_ThemeColor_CodeDefault);
+          //   if(pin->flags & RD_EntityFlag_HasColor)
+          //   {
+          //     pin_color = rd_rgba_from_entity(pin);
+          //   }
+          //   UI_PrefWidth(ui_em(1.5f, 1.f))
+          //     RD_Font(RD_FontSlot_Icons)
+          //     UI_Palette(ui_build_palette(ui_top_palette(), .text = pin_color))
+          //     UI_TextAlignment(UI_TextAlign_Center)
+          //     UI_Flags(UI_BoxFlag_DisableTextTrunc)
+          //   {
+          //     UI_Signal sig = ui_buttonf("%S###pin_nub", rd_icon_kind_text_table[RD_IconKind_Pin]);
+          //     if(ui_dragging(sig) && !contains_2f32(sig.box->rect, ui_mouse()))
+          //     {
+          //       RD_RegsScope(.entity = rd_handle_from_entity(pin)) rd_drag_begin(RD_RegSlot_Entity);
+          //     }
+          //     if(ui_right_clicked(sig))
+          //     {
+          //       RD_RegsScope(.entity = rd_handle_from_entity(pin)) rd_open_ctx_menu(sig.box->key, v2f32(0, sig.box->rect.y1-sig.box->rect.y0), RD_RegSlot_Entity);
+          //     }
+          //   }
+          //   rd_code_label(0.8f, 1, rd_rgba_from_theme_color(RD_ThemeColor_CodeDefault), pin_expr);
+          //   rd_code_label(0.6f, 1, rd_rgba_from_theme_color(RD_ThemeColor_CodeDefault), eval_string);
+          // }
+          // UI_Signal pin_sig = ui_signal_from_box(pin_box);
+          // if(ui_key_match(pin_box_key, ui_hot_key()))
+          // {
+          //   rd_set_hover_eval(v2f32(pin_box->rect.x0, pin_box->rect.y1-2.f), str8_zero(), txt_pt(1, 1), 0, pin_expr);
+          // }
         }
       }
     }
     di_scope_close(scope);
   }
-  
+
   //////////////////////////////
   //- rjf: mouse -> text coordinates
   //
@@ -1719,20 +1719,20 @@ rd_code_slice(RD_CodeSliceParams *params, TxtPt *cursor, TxtPt *mark, S64 *prefe
   ProfScope("mouse -> text coordinates")
   {
     Vec2F32 mouse = ui_mouse();
-    
+
     // rjf: mouse y => index
     U64 mouse_y_line_idx = (U64)((mouse.y - text_container_box->rect.y0) / params->line_height_px);
-    
+
     // rjf: index => line num
     S64 line_num = (params->line_num_range.min + mouse_y_line_idx);
     String8 line_string = (params->line_num_range.min <= line_num && line_num <= params->line_num_range.max) ? (params->line_text[mouse_y_line_idx]) : str8_zero();
-    
+
     // rjf: mouse x * string => column
     S64 column = fnt_char_pos_from_tag_size_string_p(params->font, params->font_size, 0, params->tab_size, line_string, mouse.x-text_container_box->rect.x0-params->line_num_width_px-line_num_padding_px)+1;
-    
+
     // rjf: bundle
     mouse_pt = txt_pt(line_num, column);
-    
+
     // rjf: clamp
     if(dim_1s64(params->line_num_range) > 0)
     {
@@ -1754,7 +1754,7 @@ rd_code_slice(RD_CodeSliceParams *params, TxtPt *cursor, TxtPt *mark, S64 *prefe
     }
     result.mouse_pt = mouse_pt;
   }
-  
+
   //////////////////////////////
   //- rjf: mouse point -> mouse token range, mouse line range
   //
@@ -1776,7 +1776,7 @@ rd_code_slice(RD_CodeSliceParams *params, TxtPt *cursor, TxtPt *mark, S64 *prefe
     }
     mouse_line_rng = txt_rng(txt_pt(mouse_pt.line, 1), txt_pt(mouse_pt.line, 1+line_range.max));
   }
-  
+
   //////////////////////////////
   //- rjf: interact with margin box & text box
   //
@@ -1798,7 +1798,7 @@ rd_code_slice(RD_CodeSliceParams *params, TxtPt *cursor, TxtPt *mark, S64 *prefe
     {
       mouse_drag_rng = mouse_token_rng;
     }
-    
+
     //- rjf: clicking/dragging over the text container
     if(!ctrlified && ui_dragging(text_container_sig))
     {
@@ -1829,7 +1829,7 @@ rd_code_slice(RD_CodeSliceParams *params, TxtPt *cursor, TxtPt *mark, S64 *prefe
       }
       *preferred_column = cursor->column;
     }
-    
+
     //- rjf: right-click => code context menu
     if(ui_right_clicked(text_container_sig))
     {
@@ -1852,7 +1852,7 @@ rd_code_slice(RD_CodeSliceParams *params, TxtPt *cursor, TxtPt *mark, S64 *prefe
         rd_open_ctx_menu(ui_key_zero(), sub_2f32(ui_mouse(), v2f32(2, 2)), RD_RegSlot_Cursor);
       }
     }
-    
+
     //- rjf: dragging threads, breakpoints, or watch pins over this slice ->
     // drop target
     if(rd_drag_is_active() && contains_2f32(clipped_top_container_rect, ui_mouse()))
@@ -1879,7 +1879,7 @@ rd_code_slice(RD_CodeSliceParams *params, TxtPt *cursor, TxtPt *mark, S64 *prefe
         line_drag_drop_color.w *= 0.5f;
       }
     }
-    
+
     //- rjf: drop target is dropped -> process
     {
       if(!rd_entity_is_nil(line_drag_entity) && rd_drag_drop() && contains_1s64(params->line_num_range, mouse_pt.line))
@@ -1903,26 +1903,26 @@ rd_code_slice(RD_CodeSliceParams *params, TxtPt *cursor, TxtPt *mark, S64 *prefe
         U64 new_rip_vaddr = line_vaddr;
         if(params->line_vaddrs[line_idx] == 0)
         {
-          D_LineList *lines = &params->line_infos[line_idx];
-          for(D_LineNode *n = lines->first; n != 0; n = n->next)
-          {
-            CTRL_EntityList modules = ctrl_modules_from_dbgi_key(scratch.arena, d_state->ctrl_entity_store, &n->v.dbgi_key);
-            CTRL_Entity *module = ctrl_module_from_thread_candidates(d_state->ctrl_entity_store, thread, &modules);
-            if(module != &ctrl_entity_nil)
-            {
-              new_rip_vaddr = ctrl_vaddr_from_voff(module, n->v.voff_range.min);
-              break;
-            }
-          }
+          // D_LineList *lines = &params->line_infos[line_idx];
+          // for(D_LineNode *n = lines->first; n != 0; n = n->next)
+          // {
+          //   CTRL_EntityList modules = ctrl_modules_from_dbgi_key(scratch.arena, d_state->ctrl_entity_store, &n->v.dbgi_key);
+          //   CTRL_Entity *module = ctrl_module_from_thread_candidates(d_state->ctrl_entity_store, thread, &modules);
+          //   if(module != &ctrl_entity_nil)
+          //   {
+          //     new_rip_vaddr = ctrl_vaddr_from_voff(module, n->v.voff_range.min);
+          //     break;
+          //   }
+          // }
         }
         rd_cmd(RD_CmdKind_SetThreadIP, .thread = thread->handle, .vaddr = new_rip_vaddr);
       }
     }
-    
+
     //- rjf: commit text container signal to main output
     result.base = text_container_sig;
   }
-  
+
   //////////////////////////////
   //- rjf: mouse -> expression range info
   //
@@ -1964,7 +1964,7 @@ rd_code_slice(RD_CodeSliceParams *params, TxtPt *cursor, TxtPt *mark, S64 *prefe
       }
     }
   }
-  
+
   //////////////////////////////
   //- rjf: mouse -> set global frontend hovered line info
   //
@@ -1984,25 +1984,25 @@ rd_code_slice(RD_CodeSliceParams *params, TxtPt *cursor, TxtPt *mark, S64 *prefe
       }
     }
   }
-  
+
   //////////////////////////////
   //- rjf: hover eval
   //
-  if(!ui_dragging(text_container_sig) && text_container_sig.event_flags == 0 && mouse_expr.size != 0)
-  {
-    E_Eval eval = e_eval_from_string(scratch.arena, mouse_expr);
-    if(eval.msgs.max_kind == E_MsgKind_Null && (eval.mode != E_Mode_Null || mouse_expr_is_explicit))
-    {
-      U64 line_vaddr = 0;
-      if(contains_1s64(params->line_num_range, mouse_pt.line))
-      {
-        U64 line_idx = mouse_pt.line-params->line_num_range.min;
-        line_vaddr = params->line_vaddrs[line_idx];
-      }
-      rd_set_hover_eval(mouse_expr_baseline_pos, rd_regs()->file_path, mouse_pt, line_vaddr, mouse_expr);
-    }
-  }
-  
+  // if(!ui_dragging(text_container_sig) && text_container_sig.event_flags == 0 && mouse_expr.size != 0)
+  // {
+  //   E_Eval eval = e_eval_from_string(scratch.arena, mouse_expr);
+  //   if(eval.msgs.max_kind == E_MsgKind_Null && (eval.mode != E_Mode_Null || mouse_expr_is_explicit))
+  //   {
+  //     U64 line_vaddr = 0;
+  //     if(contains_1s64(params->line_num_range, mouse_pt.line))
+  //     {
+  //       U64 line_idx = mouse_pt.line-params->line_num_range.min;
+  //       line_vaddr = params->line_vaddrs[line_idx];
+  //     }
+  //     rd_set_hover_eval(mouse_expr_baseline_pos, rd_regs()->file_path, mouse_pt, line_vaddr, mouse_expr);
+  //   }
+  // }
+
   //////////////////////////////
   //- rjf: dragging/dropping which applies to lines over this slice -> visualize
   //
@@ -2021,7 +2021,7 @@ rd_code_slice(RD_CodeSliceParams *params, TxtPt *cursor, TxtPt *mark, S64 *prefe
     }
     ui_box_equip_draw_bucket(text_container_box, bucket);
   }
-  
+
   //////////////////////////////
   //- rjf: (cursor*mark*list(flash_range)) -> list(text_range*color)
   //
@@ -2042,7 +2042,7 @@ rd_code_slice(RD_CodeSliceParams *params, TxtPt *cursor, TxtPt *mark, S64 *prefe
       n->color = ui_top_palette()->colors[UI_ColorCode_Selection];
       SLLQueuePush(first_txt_rng_color_pair, last_txt_rng_color_pair, n);
     }
-    
+
     // rjf: push for ctrlified mouse expr
     if(ctrlified && !txt_pt_match(result.mouse_expr_rng.max, result.mouse_expr_rng.min))
     {
@@ -2052,7 +2052,7 @@ rd_code_slice(RD_CodeSliceParams *params, TxtPt *cursor, TxtPt *mark, S64 *prefe
       SLLQueuePush(first_txt_rng_color_pair, last_txt_rng_color_pair, n);
     }
   }
-  
+
   //////////////////////////////
   //- rjf: build line numbers region (line number interaction should be basically identical to lines)
   //
@@ -2062,7 +2062,7 @@ rd_code_slice(RD_CodeSliceParams *params, TxtPt *cursor, TxtPt *mark, S64 *prefe
     ui_set_next_pref_height(ui_px(params->line_height_px*(dim_1s64(params->line_num_range)+1), 1.f));
     ui_build_box_from_key(0, ui_key_zero());
   }
-  
+
   //////////////////////////////
   //- rjf: build line text
   //
@@ -2102,7 +2102,7 @@ rd_code_slice(RD_CodeSliceParams *params, TxtPt *cursor, TxtPt *mark, S64 *prefe
         UI_Box *line_box = ui_build_box_from_key(UI_BoxFlag_DisableTextTrunc|UI_BoxFlag_DrawText|UI_BoxFlag_DisableIDString, line_key);
         DR_Bucket *line_bucket = dr_bucket_make();
         dr_push_bucket(line_bucket);
-        
+
         // rjf: string * tokens -> fancy string list
         DR_FancyStringList line_fancy_strings = {0};
         {
@@ -2139,7 +2139,7 @@ rd_code_slice(RD_CodeSliceParams *params, TxtPt *cursor, TxtPt *mark, S64 *prefe
                 }
                 token_string = str8_substr(line_string, token_range);
               }
-              
+
               // rjf: token -> token color
               Vec4F32 token_color = rd_rgba_from_theme_color(RD_ThemeColor_CodeDefault);
               {
@@ -2176,43 +2176,43 @@ rd_code_slice(RD_CodeSliceParams *params, TxtPt *cursor, TxtPt *mark, S64 *prefe
                   }
                   if(!mapped_special && token->kind == TXT_TokenKind_Identifier)
                   {
-                    U64 local_num = e_num_from_string(e_parse_ctx->locals_map, token_string);
-                    if(local_num != 0)
-                    {
-                      mapped_special = 1;
-                      new_color_kind = RD_ThemeColor_CodeLocal;
-                      mix_t = selected_thread_module_alive_t;
-                    }
+                    // U64 local_num = e_num_from_string(e_parse_ctx->locals_map, token_string);
+                    // if(local_num != 0)
+                    // {
+                    //   mapped_special = 1;
+                    //   new_color_kind = RD_ThemeColor_CodeLocal;
+                    //   mix_t = selected_thread_module_alive_t;
+                    // }
                   }
                   if(!mapped_special && token->kind == TXT_TokenKind_Identifier)
                   {
-                    U64 member_num = e_num_from_string(e_parse_ctx->member_map, token_string);
-                    if(member_num != 0)
-                    {
-                      mapped_special = 1;
-                      new_color_kind = RD_ThemeColor_CodeLocal;
-                      mix_t = selected_thread_module_alive_t;
-                    }
+                    // U64 member_num = e_num_from_string(e_parse_ctx->member_map, token_string);
+                    // if(member_num != 0)
+                    // {
+                    //   mapped_special = 1;
+                    //   new_color_kind = RD_ThemeColor_CodeLocal;
+                    //   mix_t = selected_thread_module_alive_t;
+                    // }
                   }
                   if(!mapped_special)
                   {
-                    U64 reg_num = e_num_from_string(e_parse_ctx->regs_map, token_string);
-                    if(reg_num != 0)
-                    {
-                      mapped_special = 1;
-                      new_color_kind = RD_ThemeColor_CodeRegister;
-                      mix_t = selected_thread_arch_alive_t;
-                    }
+                    // U64 reg_num = e_num_from_string(e_parse_ctx->regs_map, token_string);
+                    // if(reg_num != 0)
+                    // {
+                    //   mapped_special = 1;
+                    //   new_color_kind = RD_ThemeColor_CodeRegister;
+                    //   mix_t = selected_thread_arch_alive_t;
+                    // }
                   }
                   if(!mapped_special)
                   {
-                    U64 alias_num = e_num_from_string(e_parse_ctx->reg_alias_map, token_string);
-                    if(alias_num != 0)
-                    {
-                      mapped_special = 1;
-                      new_color_kind = RD_ThemeColor_CodeRegister;
-                      mix_t = selected_thread_arch_alive_t;
-                    }
+                    // U64 alias_num = e_num_from_string(e_parse_ctx->reg_alias_map, token_string);
+                    // if(alias_num != 0)
+                    // {
+                    //   mapped_special = 1;
+                    //   new_color_kind = RD_ThemeColor_CodeRegister;
+                    //   mix_t = selected_thread_arch_alive_t;
+                    // }
                   }
                 }
                 if(new_color_kind != RD_ThemeColor_Null)
@@ -2224,7 +2224,7 @@ rd_code_slice(RD_CodeSliceParams *params, TxtPt *cursor, TxtPt *mark, S64 *prefe
                   token_color.w += (t_color.w - token_color.w) * mix_t;
                 }
               }
-              
+
               // rjf: push fancy string
               DR_FancyString fstr =
               {
@@ -2239,10 +2239,10 @@ rd_code_slice(RD_CodeSliceParams *params, TxtPt *cursor, TxtPt *mark, S64 *prefe
             }
           }
         }
-        
+
         // rjf: equip fancy strings to line box
         ui_box_equip_display_fancy_strings(line_box, &line_fancy_strings);
-        
+
         // rjf: extra rendering for strings that are currently being searched for
         if(params->search_query.size != 0)
         {
@@ -2281,7 +2281,7 @@ rd_code_slice(RD_CodeSliceParams *params, TxtPt *cursor, TxtPt *mark, S64 *prefe
             }
           }
         }
-        
+
         // rjf: extra rendering for list(text_range*color)
         {
           U64 prev_line_size = (line_idx > 0) ? params->line_text[line_idx-1].size : 0;
@@ -2333,7 +2333,7 @@ rd_code_slice(RD_CodeSliceParams *params, TxtPt *cursor, TxtPt *mark, S64 *prefe
             }
           }
         }
-        
+
         // rjf: extra rendering for cursor position
         if(cursor->line == line_num)
         {
@@ -2350,7 +2350,7 @@ rd_code_slice(RD_CodeSliceParams *params, TxtPt *cursor, TxtPt *mark, S64 *prefe
           };
           dr_rect(cursor_rect, rd_rgba_from_theme_color(is_focused ? RD_ThemeColor_Cursor : RD_ThemeColor_CursorInactive), 1.f, 0, 1.f);
         }
-        
+
         // rjf: extra rendering for lines with line-info that match the hovered
         {
           B32 matches = 0;
@@ -2368,7 +2368,7 @@ rd_code_slice(RD_CodeSliceParams *params, TxtPt *cursor, TxtPt *mark, S64 *prefe
               break;
             }
           }
-          
+
           // rjf: matches => highlight background
           if(matches)
           {
@@ -2377,18 +2377,18 @@ rd_code_slice(RD_CodeSliceParams *params, TxtPt *cursor, TxtPt *mark, S64 *prefe
             dr_rect(line_box->rect, highlight_color, 0, 0, 0);
           }
         }
-        
+
         // rjf: equip bucket
         if(line_bucket->passes.count != 0)
         {
           ui_box_equip_draw_bucket(line_box, line_bucket);
         }
-        
+
         dr_pop_bucket();
       }
     }
   }
-  
+
   scratch_end(scratch);
   ProfEnd();
   return result;
@@ -2421,7 +2421,7 @@ rd_do_txt_controls(TXT_TextInfo *info, String8 data, U64 line_count_per_page, Tx
     B32 taken = 0;
     String8 line = txt_string_from_info_data_line_num(info, data, cursor->line);
     UI_TxtOp single_line_op = ui_single_line_txt_op_from_event(scratch.arena, evt, line, *cursor, *mark);
-    
+
     //- rjf: invalid single-line op or endpoint units => try multiline
     if(evt->delta_unit == UI_EventDeltaUnit_Whole || single_line_op.flags & UI_TxtOpFlag_Invalid)
     {
@@ -2429,7 +2429,7 @@ rd_do_txt_controls(TXT_TextInfo *info, String8 data, U64 line_count_per_page, Tx
       String8 prev_line = txt_string_from_info_data_line_num(info, data, cursor->line-1);
       String8 next_line = txt_string_from_info_data_line_num(info, data, cursor->line+1);
       Vec2S32 delta = evt->delta_2s32;
-      
+
       //- rjf: wrap lines right
       if(evt->delta_unit != UI_EventDeltaUnit_Whole && delta.x > 0 && cursor->column == line.size+1 && cursor->line+1 <= line_count)
       {
@@ -2439,7 +2439,7 @@ rd_do_txt_controls(TXT_TextInfo *info, String8 data, U64 line_count_per_page, Tx
         change = 1;
         taken = 1;
       }
-      
+
       //- rjf: wrap lines left
       if(evt->delta_unit != UI_EventDeltaUnit_Whole && delta.x < 0 && cursor->column == 1 && cursor->line-1 >= 1)
       {
@@ -2449,7 +2449,7 @@ rd_do_txt_controls(TXT_TextInfo *info, String8 data, U64 line_count_per_page, Tx
         change = 1;
         taken = 1;
       }
-      
+
       //- rjf: movement down (plain)
       if(evt->delta_unit == UI_EventDeltaUnit_Char && delta.y > 0 && cursor->line+1 <= line_count)
       {
@@ -2458,7 +2458,7 @@ rd_do_txt_controls(TXT_TextInfo *info, String8 data, U64 line_count_per_page, Tx
         change = 1;
         taken = 1;
       }
-      
+
       //- rjf: movement up (plain)
       if(evt->delta_unit == UI_EventDeltaUnit_Char && delta.y < 0 && cursor->line-1 >= 1)
       {
@@ -2467,7 +2467,7 @@ rd_do_txt_controls(TXT_TextInfo *info, String8 data, U64 line_count_per_page, Tx
         change = 1;
         taken = 1;
       }
-      
+
       //- rjf: movement down (chunk)
       if(evt->delta_unit == UI_EventDeltaUnit_Word && delta.y > 0 && cursor->line+1 <= line_count)
       {
@@ -2490,7 +2490,7 @@ rd_do_txt_controls(TXT_TextInfo *info, String8 data, U64 line_count_per_page, Tx
         change = 1;
         taken = 1;
       }
-      
+
       //- rjf: movement up (chunk)
       if(evt->delta_unit == UI_EventDeltaUnit_Word && delta.y < 0 && cursor->line-1 >= 1)
       {
@@ -2513,7 +2513,7 @@ rd_do_txt_controls(TXT_TextInfo *info, String8 data, U64 line_count_per_page, Tx
         change = 1;
         taken = 1;
       }
-      
+
       //- rjf: movement down (page)
       if(evt->delta_unit == UI_EventDeltaUnit_Page && delta.y > 0)
       {
@@ -2523,7 +2523,7 @@ rd_do_txt_controls(TXT_TextInfo *info, String8 data, U64 line_count_per_page, Tx
         change = 1;
         taken = 1;
       }
-      
+
       //- rjf: movement up (page)
       if(evt->delta_unit == UI_EventDeltaUnit_Page && delta.y < 0)
       {
@@ -2533,7 +2533,7 @@ rd_do_txt_controls(TXT_TextInfo *info, String8 data, U64 line_count_per_page, Tx
         change = 1;
         taken = 1;
       }
-      
+
       //- rjf: movement to endpoint (+)
       if(evt->delta_unit == UI_EventDeltaUnit_Whole && (delta.y > 0 || delta.x > 0))
       {
@@ -2541,7 +2541,7 @@ rd_do_txt_controls(TXT_TextInfo *info, String8 data, U64 line_count_per_page, Tx
         change = 1;
         taken = 1;
       }
-      
+
       //- rjf: movement to endpoint (-)
       if(evt->delta_unit == UI_EventDeltaUnit_Whole && (delta.y < 0 || delta.x < 0))
       {
@@ -2549,14 +2549,14 @@ rd_do_txt_controls(TXT_TextInfo *info, String8 data, U64 line_count_per_page, Tx
         change = 1;
         taken = 1;
       }
-      
+
       //- rjf: stick mark to cursor, when we don't want to keep it in the same spot
       if(!(evt->flags & UI_EventFlag_KeepMark))
       {
         *mark = *cursor;
       }
     }
-    
+
     //- rjf: valid single-line op => do single-line op
     else
     {
@@ -2566,7 +2566,7 @@ rd_do_txt_controls(TXT_TextInfo *info, String8 data, U64 line_count_per_page, Tx
       change = 1;
       taken = 1;
     }
-    
+
     //- rjf: copy
     if(evt->flags & UI_EventFlag_Copy)
     {
@@ -2574,14 +2574,14 @@ rd_do_txt_controls(TXT_TextInfo *info, String8 data, U64 line_count_per_page, Tx
       os_set_clipboard_text(text);
       taken = 1;
     }
-    
+
     //- rjf: consume
     if(taken)
     {
       ui_eat_event(evt);
     }
   }
-  
+
   scratch_end(scratch);
   return change;
 }
@@ -2697,182 +2697,182 @@ rd_help_label(String8 string)
   return result;
 }
 
-internal DR_FancyStringList
-rd_fancy_string_list_from_code_string(Arena *arena, F32 alpha, B32 indirection_size_change, Vec4F32 base_color, String8 string)
-{
-  Temp scratch = scratch_begin(&arena, 1);
-  DR_FancyStringList fancy_strings = {0};
-  TXT_TokenArray tokens = txt_token_array_from_string__c_cpp(scratch.arena, 0, string);
-  TXT_Token *tokens_opl = tokens.v+tokens.count;
-  S32 indirection_counter = 0;
-  indirection_size_change = 0;
-  for(TXT_Token *token = tokens.v; token < tokens_opl; token += 1)
-  {
-    RD_ThemeColor token_color = rd_theme_color_from_txt_token_kind(token->kind);
-    Vec4F32 token_color_rgba = rd_rgba_from_theme_color(token_color);
-    token_color_rgba.w *= alpha;
-    String8 token_string = str8_substr(string, token->range);
-    if(str8_match(token_string, str8_lit("{"), 0)) { indirection_counter += 1; }
-    if(str8_match(token_string, str8_lit("["), 0)) { indirection_counter += 1; }
-    indirection_counter = ClampBot(0, indirection_counter);
-    switch(token->kind)
-    {
-      default:
-      {
-        DR_FancyString fancy_string =
-        {
-          ui_top_font(),
-          token_string,
-          token_color_rgba,
-          ui_top_font_size() * (1.f - !!indirection_size_change*(indirection_counter/10.f)),
-        };
-        dr_fancy_string_list_push(arena, &fancy_strings, &fancy_string);
-      }break;
-      case TXT_TokenKind_Identifier:
-      {
-        E_TypeKey type = e_leaf_type_from_name(token_string);
-        Vec4F32 color = base_color;
-        if(!e_type_key_match(e_type_key_zero(), type))
-        {
-          color = rd_rgba_from_theme_color(RD_ThemeColor_CodeType);
-        }
-        else
-        {
-          CTRL_Entity *module = ctrl_entity_from_handle(d_state->ctrl_entity_store, rd_regs()->module);
-          DI_Key dbgi_key = ctrl_dbgi_key_from_module(module);
-          U64 symbol_voff = d_voff_from_dbgi_key_symbol_name(&dbgi_key, token_string);
-          if(symbol_voff != 0)
-          {
-            color = rd_rgba_from_theme_color(RD_ThemeColor_CodeSymbol);
-          }
-        }
-        DR_FancyString fancy_string =
-        {
-          ui_top_font(),
-          token_string,
-          color,
-          ui_top_font_size() * (1.f - !!indirection_size_change*(indirection_counter/10.f)),
-        };
-        dr_fancy_string_list_push(arena, &fancy_strings, &fancy_string);
-      }break;
-      case TXT_TokenKind_Numeric:
-      {
-        Vec4F32 token_color_rgba_alt = rd_rgba_from_theme_color(RD_ThemeColor_CodeNumericAltDigitGroup);
-        token_color_rgba_alt.w *= alpha;
-        F32 font_size = ui_top_font_size() * (1.f - !!indirection_size_change*(indirection_counter/10.f));
-        
-        // rjf: unpack string
-        U32 base = 10;
-        U64 prefix_skip = 0;
-        U64 digit_group_size = 3;
-        if(str8_match(str8_prefix(token_string, 2), str8_lit("0x"), StringMatchFlag_CaseInsensitive))
-        {
-          base = 16;
-          prefix_skip = 2;
-          digit_group_size = 4;
-        }
-        else if(str8_match(str8_prefix(token_string, 2), str8_lit("0b"), StringMatchFlag_CaseInsensitive))
-        {
-          base = 2;
-          prefix_skip = 2;
-          digit_group_size = 8;
-        }
-        else if(str8_match(str8_prefix(token_string, 2), str8_lit("0o"), StringMatchFlag_CaseInsensitive))
-        {
-          base = 8;
-          prefix_skip = 2;
-          digit_group_size = 2;
-        }
-        
-        // rjf: grab string parts
-        U64 dot_pos = str8_find_needle(token_string, 0, str8_lit("."), 0);
-        String8 prefix = str8_prefix(token_string, prefix_skip);
-        String8 whole = str8_substr(token_string, r1u64(prefix_skip, dot_pos));
-        String8 decimal = str8_skip(token_string, dot_pos);
-        
-        // rjf: determine # of digits
-        U64 num_digits = 0;
-        for(U64 idx = 0; idx < whole.size; idx += 1)
-        {
-          num_digits += char_is_digit(whole.str[idx], base);
-        }
-        
-        // rjf: push prefix
-        {
-          DR_FancyString fancy_string =
-          {
-            ui_top_font(),
-            prefix,
-            token_color_rgba,
-            font_size,
-          };
-          dr_fancy_string_list_push(arena, &fancy_strings, &fancy_string);
-        }
-        
-        // rjf: push digit groups
-        {
-          B32 odd = 0;
-          U64 start_idx = 0;
-          U64 num_digits_passed = digit_group_size - num_digits%digit_group_size;
-          for(U64 idx = 0; idx <= whole.size; idx += 1)
-          {
-            U8 byte = idx < whole.size ? whole.str[idx] : 0;
-            if(num_digits_passed >= digit_group_size || idx == whole.size)
-            {
-              num_digits_passed = 0;
-              if(start_idx < idx)
-              {
-                DR_FancyString fancy_string =
-                {
-                  ui_top_font(),
-                  str8_substr(whole, r1u64(start_idx, idx)),
-                  odd ? token_color_rgba_alt : token_color_rgba,
-                  font_size,
-                };
-                dr_fancy_string_list_push(arena, &fancy_strings, &fancy_string);
-                start_idx = idx;
-                odd ^= 1;
-              }
-            }
-            if(char_is_digit(byte, base))
-            {
-              num_digits_passed += 1;
-            }
-          }
-        }
-        
-        // rjf: push decimal
-        {
-          DR_FancyString fancy_string =
-          {
-            ui_top_font(),
-            decimal,
-            token_color_rgba,
-            font_size,
-          };
-          dr_fancy_string_list_push(arena, &fancy_strings, &fancy_string);
-        }
-        
-      }break;
-    }
-    if(str8_match(token_string, str8_lit("}"), 0)) { indirection_counter -= 1; }
-    if(str8_match(token_string, str8_lit("]"), 0)) { indirection_counter -= 1; }
-    indirection_counter = ClampBot(0, indirection_counter);
-  }
-  scratch_end(scratch);
-  return fancy_strings;
-}
+// internal DR_FancyStringList
+// rd_fancy_string_list_from_code_string(Arena *arena, F32 alpha, B32 indirection_size_change, Vec4F32 base_color, String8 string)
+// {
+//   Temp scratch = scratch_begin(&arena, 1);
+//   DR_FancyStringList fancy_strings = {0};
+//   TXT_TokenArray tokens = txt_token_array_from_string__c_cpp(scratch.arena, 0, string);
+//   TXT_Token *tokens_opl = tokens.v+tokens.count;
+//   S32 indirection_counter = 0;
+//   indirection_size_change = 0;
+//   for(TXT_Token *token = tokens.v; token < tokens_opl; token += 1)
+//   {
+//     RD_ThemeColor token_color = rd_theme_color_from_txt_token_kind(token->kind);
+//     Vec4F32 token_color_rgba = rd_rgba_from_theme_color(token_color);
+//     token_color_rgba.w *= alpha;
+//     String8 token_string = str8_substr(string, token->range);
+//     if(str8_match(token_string, str8_lit("{"), 0)) { indirection_counter += 1; }
+//     if(str8_match(token_string, str8_lit("["), 0)) { indirection_counter += 1; }
+//     indirection_counter = ClampBot(0, indirection_counter);
+//     switch(token->kind)
+//     {
+//       default:
+//       {
+//         DR_FancyString fancy_string =
+//         {
+//           ui_top_font(),
+//           token_string,
+//           token_color_rgba,
+//           ui_top_font_size() * (1.f - !!indirection_size_change*(indirection_counter/10.f)),
+//         };
+//         dr_fancy_string_list_push(arena, &fancy_strings, &fancy_string);
+//       }break;
+//       case TXT_TokenKind_Identifier:
+//       {
+//         E_TypeKey type = e_leaf_type_from_name(token_string);
+//         Vec4F32 color = base_color;
+//         if(!e_type_key_match(e_type_key_zero(), type))
+//         {
+//           color = rd_rgba_from_theme_color(RD_ThemeColor_CodeType);
+//         }
+//         else
+//         {
+//           CTRL_Entity *module = ctrl_entity_from_handle(d_state->ctrl_entity_store, rd_regs()->module);
+//           DI_Key dbgi_key = ctrl_dbgi_key_from_module(module);
+//           U64 symbol_voff = d_voff_from_dbgi_key_symbol_name(&dbgi_key, token_string);
+//           if(symbol_voff != 0)
+//           {
+//             color = rd_rgba_from_theme_color(RD_ThemeColor_CodeSymbol);
+//           }
+//         }
+//         DR_FancyString fancy_string =
+//         {
+//           ui_top_font(),
+//           token_string,
+//           color,
+//           ui_top_font_size() * (1.f - !!indirection_size_change*(indirection_counter/10.f)),
+//         };
+//         dr_fancy_string_list_push(arena, &fancy_strings, &fancy_string);
+//       }break;
+//       case TXT_TokenKind_Numeric:
+//       {
+//         Vec4F32 token_color_rgba_alt = rd_rgba_from_theme_color(RD_ThemeColor_CodeNumericAltDigitGroup);
+//         token_color_rgba_alt.w *= alpha;
+//         F32 font_size = ui_top_font_size() * (1.f - !!indirection_size_change*(indirection_counter/10.f));
 
-internal UI_Box *
-rd_code_label(F32 alpha, B32 indirection_size_change, Vec4F32 base_color, String8 string)
-{
-  Temp scratch = scratch_begin(0, 0);
-  DR_FancyStringList fancy_strings = rd_fancy_string_list_from_code_string(scratch.arena, alpha, indirection_size_change, base_color, string);
-  UI_Box *box = ui_build_box_from_key(UI_BoxFlag_DrawText, ui_key_zero());
-  ui_box_equip_display_fancy_strings(box, &fancy_strings);
-  scratch_end(scratch);
-  return box;
-}
+//         // rjf: unpack string
+//         U32 base = 10;
+//         U64 prefix_skip = 0;
+//         U64 digit_group_size = 3;
+//         if(str8_match(str8_prefix(token_string, 2), str8_lit("0x"), StringMatchFlag_CaseInsensitive))
+//         {
+//           base = 16;
+//           prefix_skip = 2;
+//           digit_group_size = 4;
+//         }
+//         else if(str8_match(str8_prefix(token_string, 2), str8_lit("0b"), StringMatchFlag_CaseInsensitive))
+//         {
+//           base = 2;
+//           prefix_skip = 2;
+//           digit_group_size = 8;
+//         }
+//         else if(str8_match(str8_prefix(token_string, 2), str8_lit("0o"), StringMatchFlag_CaseInsensitive))
+//         {
+//           base = 8;
+//           prefix_skip = 2;
+//           digit_group_size = 2;
+//         }
+
+//         // rjf: grab string parts
+//         U64 dot_pos = str8_find_needle(token_string, 0, str8_lit("."), 0);
+//         String8 prefix = str8_prefix(token_string, prefix_skip);
+//         String8 whole = str8_substr(token_string, r1u64(prefix_skip, dot_pos));
+//         String8 decimal = str8_skip(token_string, dot_pos);
+
+//         // rjf: determine # of digits
+//         U64 num_digits = 0;
+//         for(U64 idx = 0; idx < whole.size; idx += 1)
+//         {
+//           num_digits += char_is_digit(whole.str[idx], base);
+//         }
+
+//         // rjf: push prefix
+//         {
+//           DR_FancyString fancy_string =
+//           {
+//             ui_top_font(),
+//             prefix,
+//             token_color_rgba,
+//             font_size,
+//           };
+//           dr_fancy_string_list_push(arena, &fancy_strings, &fancy_string);
+//         }
+
+//         // rjf: push digit groups
+//         {
+//           B32 odd = 0;
+//           U64 start_idx = 0;
+//           U64 num_digits_passed = digit_group_size - num_digits%digit_group_size;
+//           for(U64 idx = 0; idx <= whole.size; idx += 1)
+//           {
+//             U8 byte = idx < whole.size ? whole.str[idx] : 0;
+//             if(num_digits_passed >= digit_group_size || idx == whole.size)
+//             {
+//               num_digits_passed = 0;
+//               if(start_idx < idx)
+//               {
+//                 DR_FancyString fancy_string =
+//                 {
+//                   ui_top_font(),
+//                   str8_substr(whole, r1u64(start_idx, idx)),
+//                   odd ? token_color_rgba_alt : token_color_rgba,
+//                   font_size,
+//                 };
+//                 dr_fancy_string_list_push(arena, &fancy_strings, &fancy_string);
+//                 start_idx = idx;
+//                 odd ^= 1;
+//               }
+//             }
+//             if(char_is_digit(byte, base))
+//             {
+//               num_digits_passed += 1;
+//             }
+//           }
+//         }
+
+//         // rjf: push decimal
+//         {
+//           DR_FancyString fancy_string =
+//           {
+//             ui_top_font(),
+//             decimal,
+//             token_color_rgba,
+//             font_size,
+//           };
+//           dr_fancy_string_list_push(arena, &fancy_strings, &fancy_string);
+//         }
+
+//       }break;
+//     }
+//     if(str8_match(token_string, str8_lit("}"), 0)) { indirection_counter -= 1; }
+//     if(str8_match(token_string, str8_lit("]"), 0)) { indirection_counter -= 1; }
+//     indirection_counter = ClampBot(0, indirection_counter);
+//   }
+//   scratch_end(scratch);
+//   return fancy_strings;
+// }
+
+// internal UI_Box *
+// rd_code_label(F32 alpha, B32 indirection_size_change, Vec4F32 base_color, String8 string)
+// {
+//   Temp scratch = scratch_begin(0, 0);
+//   DR_FancyStringList fancy_strings = rd_fancy_string_list_from_code_string(scratch.arena, alpha, indirection_size_change, base_color, string);
+//   UI_Box *box = ui_build_box_from_key(UI_BoxFlag_DrawText, ui_key_zero());
+//   ui_box_equip_display_fancy_strings(box, &fancy_strings);
+//   scratch_end(scratch);
+//   return box;
+// }
 
 ////////////////////////////////
 //~ rjf: UI Widgets: Line Edit
@@ -2882,10 +2882,10 @@ rd_line_edit(RD_LineEditFlags flags, S32 depth, FuzzyMatchRangeList *matches, Tx
 {
   //- rjf: unpack visual metrics
   F32 expander_size_px = ui_top_font_size()*2.f;
-  
+
   //- rjf: make key
   UI_Key key = ui_key_from_string(ui_active_seed_key(), string);
-  
+
   //- rjf: calculate & push focus
   B32 is_auto_focus_hot = ui_is_key_auto_focus_hot(key);
   B32 is_auto_focus_active = ui_is_key_auto_focus_active(key);
@@ -2895,7 +2895,7 @@ rd_line_edit(RD_LineEditFlags flags, S32 depth, FuzzyMatchRangeList *matches, Tx
   B32 is_focus_active = ui_is_focus_active();
   B32 is_focus_hot_disabled = (!is_focus_hot && ui_top_focus_hot() == UI_FocusKind_On);
   B32 is_focus_active_disabled = (!is_focus_active && ui_top_focus_active() == UI_FocusKind_On);
-  
+
   //- rjf: build top-level box
   if(is_focus_active || is_focus_active_disabled)
   {
@@ -2910,14 +2910,14 @@ rd_line_edit(RD_LineEditFlags flags, S32 depth, FuzzyMatchRangeList *matches, Tx
                                       ((is_auto_focus_hot || is_auto_focus_active)*UI_BoxFlag_KeyboardClickable)|
                                       (is_focus_active || is_focus_active_disabled)*(UI_BoxFlag_Clip),
                                       key);
-  
+
   //- rjf: build indent
   UI_Parent(box) for(S32 idx = 0; idx < depth; idx += 1)
   {
     ui_set_next_flags(UI_BoxFlag_DrawSideLeft);
     ui_spacer(ui_em(1.f, 1.f));
   }
-  
+
   //- rjf: build expander
   if(flags & RD_LineEditFlag_Expander) UI_PrefWidth(ui_px(expander_size_px, 1.f)) UI_Parent(box)
     UI_Flags(UI_BoxFlag_DrawSideLeft)
@@ -2929,7 +2929,7 @@ rd_line_edit(RD_LineEditFlags flags, S32 depth, FuzzyMatchRangeList *matches, Tx
       *expanded_out ^= 1;
     }
   }
-  
+
   //- rjf: build expander placeholder
   else if(flags & RD_LineEditFlag_ExpanderPlaceholder) UI_Parent(box) UI_PrefWidth(ui_px(expander_size_px, 1.f)) UI_Focus(UI_FocusKind_Off)
   {
@@ -2939,20 +2939,20 @@ rd_line_edit(RD_LineEditFlags flags, S32 depth, FuzzyMatchRangeList *matches, Tx
       UI_TextAlignment(UI_TextAlign_Center)
       ui_label(rd_icon_kind_text_table[RD_IconKind_Dot]);
   }
-  
+
   //- rjf: build expander space
   else if(flags & RD_LineEditFlag_ExpanderSpace) UI_Parent(box) UI_Focus(UI_FocusKind_Off)
   {
     UI_Flags(UI_BoxFlag_DrawSideLeft) ui_spacer(ui_px(expander_size_px, 1.f));
   }
-  
+
   //- rjf: build scrollable container box
   UI_Box *scrollable_box = &ui_nil_box;
   UI_Parent(box) UI_PrefWidth(ui_children_sum(0))
   {
     scrollable_box = ui_build_box_from_stringf(is_focus_active*(UI_BoxFlag_AllowOverflowX), "scroll_box_%p", edit_buffer);
   }
-  
+
   //- rjf: do non-textual edits (delete, copy, cut)
   B32 commit = 0;
   if(!is_focus_active && is_focus_hot)
@@ -2970,14 +2970,14 @@ rd_line_edit(RD_LineEditFlags flags, S32 depth, FuzzyMatchRangeList *matches, Tx
       }
     }
   }
-  
+
   //- rjf: get signal
   UI_Signal sig = ui_signal_from_box(box);
   if(commit)
   {
     sig.f |= UI_SignalFlag_Commit;
   }
-  
+
   //- rjf: do start/end editing interaction
   B32 focus_started = 0;
   if(!is_focus_active)
@@ -3017,7 +3017,7 @@ rd_line_edit(RD_LineEditFlags flags, S32 depth, FuzzyMatchRangeList *matches, Tx
     ui_set_auto_focus_active_key(ui_key_zero());
     sig.f |= UI_SignalFlag_Commit;
   }
-  
+
   //- rjf: determine autocompletion string
   String8 autocomplete_hint_string = {0};
   {
@@ -3029,7 +3029,7 @@ rd_line_edit(RD_LineEditFlags flags, S32 depth, FuzzyMatchRangeList *matches, Tx
       }
     }
   }
-  
+
   //- rjf: take navigation actions for editing
   B32 changes_made = 0;
   if(!(flags & RD_LineEditFlag_DisableEdit) && (is_focus_active || focus_started))
@@ -3039,16 +3039,16 @@ rd_line_edit(RD_LineEditFlags flags, S32 depth, FuzzyMatchRangeList *matches, Tx
     for(UI_Event *evt = 0; ui_next_event(&evt);)
     {
       String8 edit_string = str8(edit_buffer, edit_string_size_out[0]);
-      
+
       // rjf: do not consume anything that doesn't fit a single-line's operations
       if((evt->kind != UI_EventKind_Edit && evt->kind != UI_EventKind_Navigate && evt->kind != UI_EventKind_Text) || evt->delta_2s32.y != 0)
       {
         continue;
       }
-      
+
       // rjf: map this action to an op
       UI_TxtOp op = ui_single_line_txt_op_from_event(scratch.arena, evt, edit_string, *cursor, *mark);
-      
+
       // rjf: any valid op & autocomplete hint? -> perform autocomplete first, then re-compute op
       if(autocomplete_hint_string.size != 0)
       {
@@ -3063,7 +3063,7 @@ rd_line_edit(RD_LineEditFlags flags, S32 depth, FuzzyMatchRangeList *matches, Tx
         op = ui_single_line_txt_op_from_event(scratch.arena, evt, edit_string, *cursor, *mark);
         MemoryZeroStruct(&autocomplete_hint_string);
       }
-      
+
       // rjf: perform replace range
       if(!txt_pt_match(op.range.min, op.range.max) || op.replace.size != 0)
       {
@@ -3072,17 +3072,17 @@ rd_line_edit(RD_LineEditFlags flags, S32 depth, FuzzyMatchRangeList *matches, Tx
         MemoryCopy(edit_buffer, new_string.str, new_string.size);
         edit_string_size_out[0] = new_string.size;
       }
-      
+
       // rjf: perform copy
       if(op.flags & UI_TxtOpFlag_Copy)
       {
         os_set_clipboard_text(op.copy);
       }
-      
+
       // rjf: commit op's changed cursor & mark to caller-provided state
       *cursor = op.cursor;
       *mark = op.mark;
-      
+
       // rjf: consume event
       {
         ui_eat_event(evt);
@@ -3091,7 +3091,7 @@ rd_line_edit(RD_LineEditFlags flags, S32 depth, FuzzyMatchRangeList *matches, Tx
     }
     scratch_end(scratch);
   }
-  
+
   //- rjf: build scrolled contents
   TxtPt mouse_pt = {0};
   F32 cursor_off = 0;
@@ -3103,19 +3103,19 @@ rd_line_edit(RD_LineEditFlags flags, S32 depth, FuzzyMatchRangeList *matches, Tx
       if(!(flags & RD_LineEditFlag_PreferDisplayString) && pre_edit_value.size != 0)
       {
         display_string = pre_edit_value;
-        UI_Box *box = rd_code_label(1.f, 1, ui_top_palette()->text, display_string);
-        if(matches != 0)
-        {
-          ui_box_equip_fuzzy_match_ranges(box, matches);
-        }
+        // UI_Box *box = rd_code_label(1.f, 1, ui_top_palette()->text, display_string);
+        // if(matches != 0)
+        // {
+        //   ui_box_equip_fuzzy_match_ranges(box, matches);
+        // }
       }
       else if(flags & RD_LineEditFlag_DisplayStringIsCode)
       {
-        UI_Box *box = rd_code_label(1.f, 1, ui_top_palette()->text, display_string);
-        if(matches != 0)
-        {
-          ui_box_equip_fuzzy_match_ranges(box, matches);
-        }
+        // UI_Box *box = rd_code_label(1.f, 1, ui_top_palette()->text, display_string);
+        // if(matches != 0)
+        // {
+        //   ui_box_equip_fuzzy_match_ranges(box, matches);
+        // }
       }
       else
       {
@@ -3152,72 +3152,72 @@ rd_line_edit(RD_LineEditFlags flags, S32 depth, FuzzyMatchRangeList *matches, Tx
       F32 total_editstr_width = total_text_width - !!(flags & (RD_LineEditFlag_Expander|RD_LineEditFlag_ExpanderSpace|RD_LineEditFlag_ExpanderPlaceholder)) * expander_size_px;
       ui_set_next_pref_width(ui_px(total_editstr_width+ui_top_font_size()*2, 0.f));
       UI_Box *editstr_box = ui_build_box_from_stringf(UI_BoxFlag_DrawText|UI_BoxFlag_DisableTextTrunc, "###editstr");
-      DR_FancyStringList code_fancy_strings = rd_fancy_string_list_from_code_string(scratch.arena, 1.f, 0, ui_top_palette()->text, edit_string);
-      if(autocomplete_hint_string.size != 0)
-      {
-        String8 query_word = rd_autocomp_query_word_from_input_string_off(edit_string, cursor->column-1);
-        String8 autocomplete_append_string = str8_skip(autocomplete_hint_string, query_word.size);
-        U64 off = 0;
-        U64 cursor_off = cursor->column-1;
-        DR_FancyStringNode *prev_n = 0;
-        for(DR_FancyStringNode *n = code_fancy_strings.first; n != 0; n = n->next)
-        {
-          if(off <= cursor_off && cursor_off <= off+n->v.string.size)
-          {
-            prev_n = n;
-            break;
-          }
-          off += n->v.string.size;
-        }
-        {
-          DR_FancyStringNode *autocomp_fstr_n = push_array(scratch.arena, DR_FancyStringNode, 1);
-          DR_FancyString *fstr = &autocomp_fstr_n->v;
-          fstr->font = ui_top_font();
-          fstr->string = autocomplete_append_string;
-          fstr->color = ui_top_palette()->text;
-          fstr->color.w *= 0.5f;
-          fstr->size = ui_top_font_size();
-          autocomp_fstr_n->next = prev_n ? prev_n->next : 0;
-          if(prev_n != 0)
-          {
-            prev_n->next = autocomp_fstr_n;
-          }
-          if(prev_n == 0)
-          {
-            code_fancy_strings.first = code_fancy_strings.last = autocomp_fstr_n;
-          }
-          if(prev_n != 0 && prev_n->next == 0)
-          {
-            code_fancy_strings.last = autocomp_fstr_n;
-          }
-          code_fancy_strings.node_count += 1;
-          code_fancy_strings.total_size += autocomplete_hint_string.size;
-          if(prev_n != 0 && cursor_off - off < prev_n->v.string.size)
-          {
-            String8 full_string = prev_n->v.string;
-            U64 chop_amt = full_string.size - (cursor_off - off);
-            prev_n->v.string = str8_chop(full_string, chop_amt);
-            code_fancy_strings.total_size -= chop_amt;
-            if(chop_amt != 0)
-            {
-              String8 post_cursor = str8_skip(full_string, cursor_off - off);
-              DR_FancyStringNode *post_fstr_n = push_array(scratch.arena, DR_FancyStringNode, 1);
-              DR_FancyString *post_fstr = &post_fstr_n->v;
-              MemoryCopyStruct(post_fstr, &prev_n->v);
-              post_fstr->string   = post_cursor;
-              if(autocomp_fstr_n->next == 0)
-              {
-                code_fancy_strings.last = post_fstr_n;
-              }
-              post_fstr_n->next = autocomp_fstr_n->next;
-              autocomp_fstr_n->next = post_fstr_n;
-              code_fancy_strings.node_count += 1;
-              code_fancy_strings.total_size += post_cursor.size;
-            }
-          }
-        }
-      }
-      ui_box_equip_display_fancy_strings(editstr_box, &code_fancy_strings);
+      // DR_FancyStringList code_fancy_strings = rd_fancy_string_list_from_code_string(scratch.arena, 1.f, 0, ui_top_palette()->text, edit_string);
+      // if(autocomplete_hint_string.size != 0)
+      // {
+      //   String8 query_word = rd_autocomp_query_word_from_input_string_off(edit_string, cursor->column-1);
+      //   String8 autocomplete_append_string = str8_skip(autocomplete_hint_string, query_word.size);
+      //   U64 off = 0;
+      //   U64 cursor_off = cursor->column-1;
+      //   DR_FancyStringNode *prev_n = 0;
+      //   for(DR_FancyStringNode *n = code_fancy_strings.first; n != 0; n = n->next)
+      //   {
+      //     if(off <= cursor_off && cursor_off <= off+n->v.string.size)
+      //     {
+      //       prev_n = n;
+      //       break;
+      //     }
+      //     off += n->v.string.size;
+      //   }
+      //   {
+      //     DR_FancyStringNode *autocomp_fstr_n = push_array(scratch.arena, DR_FancyStringNode, 1);
+      //     DR_FancyString *fstr = &autocomp_fstr_n->v;
+      //     fstr->font = ui_top_font();
+      //     fstr->string = autocomplete_append_string;
+      //     fstr->color = ui_top_palette()->text;
+      //     fstr->color.w *= 0.5f;
+      //     fstr->size = ui_top_font_size();
+      //     autocomp_fstr_n->next = prev_n ? prev_n->next : 0;
+      //     if(prev_n != 0)
+      //     {
+      //       prev_n->next = autocomp_fstr_n;
+      //     }
+      //     if(prev_n == 0)
+      //     {
+      //       code_fancy_strings.first = code_fancy_strings.last = autocomp_fstr_n;
+      //     }
+      //     if(prev_n != 0 && prev_n->next == 0)
+      //     {
+      //       code_fancy_strings.last = autocomp_fstr_n;
+      //     }
+      //     code_fancy_strings.node_count += 1;
+      //     code_fancy_strings.total_size += autocomplete_hint_string.size;
+      //     if(prev_n != 0 && cursor_off - off < prev_n->v.string.size)
+      //     {
+      //       String8 full_string = prev_n->v.string;
+      //       U64 chop_amt = full_string.size - (cursor_off - off);
+      //       prev_n->v.string = str8_chop(full_string, chop_amt);
+      //       code_fancy_strings.total_size -= chop_amt;
+      //       if(chop_amt != 0)
+      //       {
+      //         String8 post_cursor = str8_skip(full_string, cursor_off - off);
+      //         DR_FancyStringNode *post_fstr_n = push_array(scratch.arena, DR_FancyStringNode, 1);
+      //         DR_FancyString *post_fstr = &post_fstr_n->v;
+      //         MemoryCopyStruct(post_fstr, &prev_n->v);
+      //         post_fstr->string   = post_cursor;
+      //         if(autocomp_fstr_n->next == 0)
+      //         {
+      //           code_fancy_strings.last = post_fstr_n;
+      //         }
+      //         post_fstr_n->next = autocomp_fstr_n->next;
+      //         autocomp_fstr_n->next = post_fstr_n;
+      //         code_fancy_strings.node_count += 1;
+      //         code_fancy_strings.total_size += post_cursor.size;
+      //       }
+      //     }
+      //   }
+      // }
+      // ui_box_equip_display_fancy_strings(editstr_box, &code_fancy_strings);
       UI_LineEditDrawData *draw_data = push_array(ui_build_arena(), UI_LineEditDrawData, 1);
       draw_data->edited_string = push_str8_copy(ui_build_arena(), edit_string);
       draw_data->cursor = *cursor;
@@ -3244,7 +3244,7 @@ rd_line_edit(RD_LineEditFlags flags, S32 depth, FuzzyMatchRangeList *matches, Tx
       cursor_off = fnt_dim_from_tag_size_string(ui_top_font(), ui_top_font_size(), 0, ui_top_tab_size(), str8_prefix(edit_string, cursor->column-1)).x;
     }
   }
-  
+
   //- rjf: click+drag
   if(is_focus_active && ui_dragging(sig))
   {
@@ -3258,7 +3258,7 @@ rd_line_edit(RD_LineEditFlags flags, S32 depth, FuzzyMatchRangeList *matches, Tx
   {
     *cursor = *mark = mouse_pt;
   }
-  
+
   //- rjf: focus cursor
   {
     F32 visible_dim_px = dim_2f32(box->rect).x - expander_size_px - ui_top_font_size()*depth;
@@ -3280,11 +3280,11 @@ rd_line_edit(RD_LineEditFlags flags, S32 depth, FuzzyMatchRangeList *matches, Tx
       scrollable_box->view_off_target.x = scrollable_box->view_off.x = 0;
     }
   }
-  
+
   //- rjf: pop focus
   if(is_auto_focus_hot) { ui_pop_focus_hot(); }
   if(is_auto_focus_active) { ui_pop_focus_active(); }
-  
+
   return sig;
 }
 

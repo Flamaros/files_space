@@ -87,25 +87,25 @@ struct DI_Node
   // rjf: links
   DI_Node *next;
   DI_Node *prev;
-  
+
   // rjf: metadata
   U64 ref_count;
   U64 touch_count;
   U64 is_working;
   U64 last_time_requested_us;
-  
+
   // rjf: key
   DI_Key key;
-  
+
   // rjf: file handles
   OS_Handle file;
   OS_Handle file_map;
   void *file_base;
   FileProperties file_props;
-  
+
   // rjf: parse artifacts
   Arena *arena;
-  RDI_Parsed rdi;
+//!!  RDI_Parsed rdi;
   B32 parse_done;
 };
 
@@ -159,13 +159,13 @@ typedef struct DI_Shared DI_Shared;
 struct DI_Shared
 {
   Arena *arena;
-  
+
   // rjf: node cache
   U64 slots_count;
   DI_Slot *slots;
   U64 stripes_count;
   DI_Stripe *stripes;
-  
+
   // rjf: user -> parse ring
   OS_Handle u2p_ring_mutex;
   OS_Handle u2p_ring_cv;
@@ -173,7 +173,7 @@ struct DI_Shared
   U8 *u2p_ring_base;
   U64 u2p_ring_write_pos;
   U64 u2p_ring_read_pos;
-  
+
   // rjf: parse -> user event ring
   OS_Handle p2u_ring_mutex;
   OS_Handle p2u_ring_cv;
@@ -181,7 +181,7 @@ struct DI_Shared
   U8 *p2u_ring_base;
   U64 p2u_ring_write_pos;
   U64 p2u_ring_read_pos;
-  
+
   // rjf: threads
   U64 parse_thread_count;
   OS_Handle *parse_threads;
@@ -192,7 +192,7 @@ struct DI_Shared
 
 global DI_Shared *di_shared = 0;
 thread_static DI_TCTX *di_tctx = 0;
-global RDI_Parsed di_rdi_parsed_nil = {0};
+//!! global RDI_Parsed di_rdi_parsed_nil = {0};
 
 ////////////////////////////////
 //~ rjf: Basic Helpers
@@ -239,7 +239,7 @@ internal void di_close(DI_Key *key);
 ////////////////////////////////
 //~ rjf: Cache Lookups
 
-internal RDI_Parsed *di_rdi_from_key(DI_Scope *scope, DI_Key *key, U64 endt_us);
+//!! internal RDI_Parsed *di_rdi_from_key(DI_Scope *scope, DI_Key *key, U64 endt_us);
 
 ////////////////////////////////
 //~ rjf: Parse Threads

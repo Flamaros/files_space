@@ -21,7 +21,7 @@ struct RD_CodeViewState
   B32 initialized;
   S64 preferred_column;
   B32 drifted_for_search;
-  
+
   // rjf: per-frame command info
   S64 goto_line_num;
   B32 center_cursor;
@@ -114,8 +114,8 @@ typedef struct RD_WatchViewPoint RD_WatchViewPoint;
 struct RD_WatchViewPoint
 {
   S64 x;
-  EV_Key parent_key;
-  EV_Key key;
+  //!! EV_Key parent_key;
+  // EV_Key key;
 };
 
 typedef struct RD_WatchViewRowInfo RD_WatchViewRowInfo;
@@ -147,20 +147,20 @@ typedef struct RD_WatchViewState RD_WatchViewState;
 struct RD_WatchViewState
 {
   B32 initialized;
-  
+
   // rjf: column state
   Arena *column_arena;
   RD_WatchViewColumn *first_column;
   RD_WatchViewColumn *last_column;
   RD_WatchViewColumn *free_column;
   U64 column_count;
-  
+
   // rjf; table cursor state
   RD_WatchViewPoint cursor;
   RD_WatchViewPoint mark;
   RD_WatchViewPoint next_cursor;
   RD_WatchViewPoint next_mark;
-  
+
   // rjf: text input state
   Arena *text_edit_arena;
   U64 text_edit_state_slots_count;
@@ -183,18 +183,18 @@ internal RD_WatchViewColumn *rd_watch_view_column_from_x(RD_WatchViewState *wv, 
 
 //- rjf: watch view points <-> table coordinates
 internal B32 rd_watch_view_point_match(RD_WatchViewPoint a, RD_WatchViewPoint b);
-internal RD_WatchViewPoint rd_watch_view_point_from_tbl(EV_BlockRangeList *block_ranges, Vec2S64 tbl);
-internal Vec2S64 rd_tbl_from_watch_view_point(EV_BlockRangeList *block_ranges, RD_WatchViewPoint pt);
+//!! internal RD_WatchViewPoint rd_watch_view_point_from_tbl(EV_BlockRangeList *block_ranges, Vec2S64 tbl);
+//!! internal Vec2S64 rd_tbl_from_watch_view_point(EV_BlockRangeList *block_ranges, RD_WatchViewPoint pt);
 
 //- rjf: row -> context info
-internal RD_WatchViewRowInfo rd_watch_view_row_info_from_row(EV_Row *row);
+//!! internal RD_WatchViewRowInfo rd_watch_view_row_info_from_row(EV_Row *row);
 
 //- rjf: watch view flags & row & row info -> row kind
-internal RD_WatchViewRowKind rd_watch_view_row_kind_from_flags_row_info(RD_WatchViewFlags flags, EV_Row *row, RD_WatchViewRowInfo *info);
+//!! internal RD_WatchViewRowKind rd_watch_view_row_kind_from_flags_row_info(RD_WatchViewFlags flags, EV_Row *row, RD_WatchViewRowInfo *info);
 
 //- rjf: row/column -> exprs / strings
-internal E_Expr *rd_expr_from_watch_view_row_column(Arena *arena, EV_View *ev_view, EV_Row *row, RD_WatchViewColumn *col);
-internal String8 rd_string_from_eval_viz_row_column(Arena *arena, EV_View *ev, EV_Row *row, RD_WatchViewColumn *col, EV_StringFlags string_flags, U32 default_radix, FNT_Tag font, F32 font_size, F32 max_size_px);
+//!! internal E_Expr *rd_expr_from_watch_view_row_column(Arena *arena, EV_View *ev_view, EV_Row *row, RD_WatchViewColumn *col);
+// internal String8 rd_string_from_eval_viz_row_column(Arena *arena, EV_View *ev, EV_Row *row, RD_WatchViewColumn *col, EV_StringFlags string_flags, U32 default_radix, FNT_Tag font, F32 font_size, F32 max_size_px);
 
 //- rjf: table coordinates -> text edit state
 internal RD_WatchViewTextEditState *rd_watch_view_text_edit_state_from_pt(RD_WatchViewState *wv, RD_WatchViewPoint pt);
@@ -205,7 +205,7 @@ internal RD_WatchViewColumn *rd_watch_view_column_alloc_(RD_WatchViewState *wv, 
 internal void rd_watch_view_column_release(RD_WatchViewState *wv, RD_WatchViewColumn *col);
 
 //- rjf: watch view main hooks
-internal void rd_watch_view_init(RD_WatchViewState *ewv);
-internal void rd_watch_view_build(RD_WatchViewState *ewv, RD_WatchViewFlags flags, String8 root_expr, String8 root_view_rule, B32 modifiable, U32 default_radix, Rng2F32 rect);
+// internal void rd_watch_view_init(RD_WatchViewState *ewv);
+// internal void rd_watch_view_build(RD_WatchViewState *ewv, RD_WatchViewFlags flags, String8 root_expr, String8 root_view_rule, B32 modifiable, U32 default_radix, Rng2F32 rect);
 
 #endif // RADDBG_VIEWS_H

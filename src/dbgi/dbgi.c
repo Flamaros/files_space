@@ -221,7 +221,7 @@ di_string_alloc__stripe_mutex_w_guarded(DI_Stripe *stripe, String8 string)
   if(string.size == 0) {return str8_zero();}
   U64 bucket_idx = di_string_bucket_idx_from_string_size(string.size);
   DI_StringChunkNode *node = stripe->free_string_chunks[bucket_idx];
-  
+
   // rjf: pull from bucket free list
   if(node != 0)
   {
@@ -253,7 +253,7 @@ di_string_alloc__stripe_mutex_w_guarded(DI_Stripe *stripe, String8 string)
       SLLStackPop(stripe->free_string_chunks[bucket_idx]);
     }
   }
-  
+
   // rjf: no found node -> allocate new
   if(node == 0)
   {
@@ -269,7 +269,7 @@ di_string_alloc__stripe_mutex_w_guarded(DI_Stripe *stripe, String8 string)
     U8 *chunk_memory = push_array(stripe->arena, U8, chunk_size);
     node = (DI_StringChunkNode *)chunk_memory;
   }
-  
+
   // rjf: fill string & return
   String8 allocated_string = str8((U8 *)node, string.size);
   MemoryCopy((U8 *)node, string.str, string.size);
@@ -306,7 +306,7 @@ di_open(DI_Key *key)
     {
       //- rjf: find existing node
       DI_Node *node = di_node_from_key_slot__stripe_mutex_r_guarded(slot, &key_normalized);
-      
+
       //- rjf: allocate node if none exists; insert into slot
       if(node == 0)
       {
@@ -330,7 +330,7 @@ di_open(DI_Key *key)
         node->key.path = path_stored;
         node->key.min_timestamp = current_timestamp;
       }
-      
+
       //- rjf: increment node reference count
       if(node != 0)
       {
@@ -363,7 +363,7 @@ di_close(DI_Key *key)
     {
       //- rjf: find existing node
       DI_Node *node = di_node_from_key_slot__stripe_mutex_r_guarded(slot, &key_normalized);
-      
+
       //- rjf: node exists -> decrement reference count; release
       if(node != 0)
       {
@@ -377,7 +377,7 @@ di_close(DI_Key *key)
             for(U64 start_t = os_now_microseconds(); os_now_microseconds() <= start_t + 250;);
             os_rw_mutex_take_w(stripe->rw_mutex);
           }
-          
+
           //- rjf: release
           if(node->ref_count == 0 && ins_atomic_u64_eval(&node->touch_count) == 0)
           {
@@ -413,70 +413,70 @@ di_close(DI_Key *key)
 ////////////////////////////////
 //~ rjf: Cache Lookups
 
-internal RDI_Parsed *
-di_rdi_from_key(DI_Scope *scope, DI_Key *key, U64 endt_us)
-{
-  RDI_Parsed *result = &di_rdi_parsed_nil;
-  if(key->path.size != 0)
-  {
-    Temp scratch = scratch_begin(0, 0);
-    DI_Key key_normalized = di_normalized_key_from_key(scratch.arena, key);
-    U64 hash = di_hash_from_key(&key_normalized);
-    U64 slot_idx = hash%di_shared->slots_count;
-    U64 stripe_idx = slot_idx%di_shared->stripes_count;
-    DI_Slot *slot = &di_shared->slots[slot_idx];
-    DI_Stripe *stripe = &di_shared->stripes[stripe_idx];
-    OS_MutexScopeR(stripe->rw_mutex) for(;;)
-    {
-      //- rjf: find existing node
-      DI_Node *node = di_node_from_key_slot__stripe_mutex_r_guarded(slot, &key_normalized);
-      
-      //- rjf: no node? this path is not opened
-      if(node == 0)
-      {
-        break;
-      }
-      
-      //- rjf: node refcount == 0? this node is being destroyed
-      if(node->ref_count == 0)
-      {
-        break;
-      }
-      
-      //- rjf: parse done -> touch, grab result
-      if(node != 0 && node->parse_done)
-      {
-        di_scope_touch_node__stripe_mutex_r_guarded(scope, node);
-        result = &node->rdi;
-        break;
-      }
-      
-      //- rjf: parse not done, not working, asked a while ago -> ask for parse
-      B32 sent = 0;
-      if(node != 0 && !node->parse_done && !node->is_working && ins_atomic_u64_eval(&node->last_time_requested_us)+1000000<os_now_microseconds())
-      {
-        sent = di_u2p_enqueue_key(&key_normalized, endt_us);
-        if(sent)
-        {
-          ins_atomic_u64_eval_assign(&node->last_time_requested_us, os_now_microseconds());
-        }
-      }
-      
-      //- rjf: time expired -> break
-      if(os_now_microseconds() >= endt_us)
-      {
-        break;
-      }
-      
-      //- rjf: wait on this stripe
-      {
-        os_condition_variable_wait_rw_r(stripe->cv, stripe->rw_mutex, endt_us);
-      }
-    }
-    scratch_end(scratch);
-  }
-  return result;
-}
+//!! internal RDI_Parsed *
+// di_rdi_from_key(DI_Scope *scope, DI_Key *key, U64 endt_us)
+// {
+//   RDI_Parsed *result = &di_rdi_parsed_nil;
+//   if(key->path.size != 0)
+//   {
+//     Temp scratch = scratch_begin(0, 0);
+//     DI_Key key_normalized = di_normalized_key_from_key(scratch.arena, key);
+//     U64 hash = di_hash_from_key(&key_normalized);
+//     U64 slot_idx = hash%di_shared->slots_count;
+//     U64 stripe_idx = slot_idx%di_shared->stripes_count;
+//     DI_Slot *slot = &di_shared->slots[slot_idx];
+//     DI_Stripe *stripe = &di_shared->stripes[stripe_idx];
+//     OS_MutexScopeR(stripe->rw_mutex) for(;;)
+//     {
+//       //- rjf: find existing node
+//       DI_Node *node = di_node_from_key_slot__stripe_mutex_r_guarded(slot, &key_normalized);
+
+//       //- rjf: no node? this path is not opened
+//       if(node == 0)
+//       {
+//         break;
+//       }
+
+//       //- rjf: node refcount == 0? this node is being destroyed
+//       if(node->ref_count == 0)
+//       {
+//         break;
+//       }
+
+//       //- rjf: parse done -> touch, grab result
+//       if(node != 0 && node->parse_done)
+//       {
+//         di_scope_touch_node__stripe_mutex_r_guarded(scope, node);
+//         result = &node->rdi;
+//         break;
+//       }
+
+//       //- rjf: parse not done, not working, asked a while ago -> ask for parse
+//       B32 sent = 0;
+//       if(node != 0 && !node->parse_done && !node->is_working && ins_atomic_u64_eval(&node->last_time_requested_us)+1000000<os_now_microseconds())
+//       {
+//         sent = di_u2p_enqueue_key(&key_normalized, endt_us);
+//         if(sent)
+//         {
+//           ins_atomic_u64_eval_assign(&node->last_time_requested_us, os_now_microseconds());
+//         }
+//       }
+
+//       //- rjf: time expired -> break
+//       if(os_now_microseconds() >= endt_us)
+//       {
+//         break;
+//       }
+
+//       //- rjf: wait on this stripe
+//       {
+//         os_condition_variable_wait_rw_r(stripe->cv, stripe->rw_mutex, endt_us);
+//       }
+//     }
+//     scratch_end(scratch);
+//   }
+//   return result;
+// }
 
 ////////////////////////////////
 //~ rjf: Parse Threads
@@ -591,7 +591,7 @@ di_parse_thread__entry_point(void *p)
   for(;;)
   {
     Temp scratch = scratch_begin(0, 0);
-    
+
     ////////////////////////////
     //- rjf: grab next key
     //
@@ -599,7 +599,7 @@ di_parse_thread__entry_point(void *p)
     di_u2p_dequeue_key(scratch.arena, &key);
     String8 og_path = key.path;
     U64 min_timestamp = key.min_timestamp;
-    
+
     ////////////////////////////
     //- rjf: unpack key
     //
@@ -608,7 +608,7 @@ di_parse_thread__entry_point(void *p)
     U64 stripe_idx = slot_idx%di_shared->stripes_count;
     DI_Slot *slot = &di_shared->slots[slot_idx];
     DI_Stripe *stripe = &di_shared->stripes[stripe_idx];
-    
+
     ////////////////////////////
     //- rjf: take task
     //
@@ -621,7 +621,7 @@ di_parse_thread__entry_point(void *p)
         got_task = !ins_atomic_u64_eval_cond_assign(&node->is_working, 1, 0);
       }
     }
-    
+
     ////////////////////////////
     //- rjf: got task -> open O.G. file (may or may not be RDI)
     //
@@ -653,11 +653,11 @@ di_parse_thread__entry_point(void *p)
       }
       if(!og_format_is_known)
       {
-        if(data.size >= 8 && *(U64 *)data.str == RDI_MAGIC_CONSTANT)
-        {
-          og_format_is_known = 1;
-          og_is_rdi = 1;
-        }
+        //!! if(data.size >= 8 && *(U64 *)data.str == RDI_MAGIC_CONSTANT)
+        // {
+        //   og_format_is_known = 1;
+        //   og_is_rdi = 1;
+        // }
       }
       if(!og_format_is_known)
       {
@@ -683,7 +683,7 @@ di_parse_thread__entry_point(void *p)
       os_file_map_close(file_map);
       os_file_close(file);
     }
-    
+
     ////////////////////////////
     //- rjf: given O.G. path & analysis, determine RDI path
     //
@@ -699,7 +699,7 @@ di_parse_thread__entry_point(void *p)
         rdi_path = push_str8f(scratch.arena, "%S.rdi", str8_chop_last_dot(og_path));
       }
     }
-    
+
     ////////////////////////////
     //- rjf: check if rdi file is up-to-date
     //
@@ -712,7 +712,7 @@ di_parse_thread__entry_point(void *p)
         rdi_file_is_up_to_date = (props.modified > og_props.modified);
       }
     }
-    
+
     ////////////////////////////
     //- rjf: if raddbg file is up to date based on timestamp, check the
     // encoding generation number & size, to see if we need to regenerate it
@@ -728,23 +728,23 @@ di_parse_thread__entry_point(void *p)
       file_map = os_file_map_open(OS_AccessFlag_Read, file);
       file_props = os_properties_from_file(file);
       file_base = os_file_map_view_open(file_map, OS_AccessFlag_Read, r1u64(0, file_props.size));
-      if(sizeof(RDI_Header) <= file_props.size)
-      {
-        RDI_Header *header = (RDI_Header*)file_base;
-        if(header->encoding_version != RDI_ENCODING_VERSION)
-        {
-          rdi_file_is_up_to_date = 0;
-        }
-      }
-      else
-      {
-        rdi_file_is_up_to_date = 0;
-      }
+      //!! if(sizeof(RDI_Header) <= file_props.size)
+      // {
+      //   RDI_Header *header = (RDI_Header*)file_base;
+      //   if(header->encoding_version != RDI_ENCODING_VERSION)
+      //   {
+      //     rdi_file_is_up_to_date = 0;
+      //   }
+      // }
+      // else
+      // {
+      //   rdi_file_is_up_to_date = 0;
+      // }
       os_file_map_view_close(file_map, file_base, r1u64(0, file_props.size));
       os_file_map_close(file_map);
       os_file_close(file);
     }
-    
+
     ////////////////////////////
     //- rjf: heuristically choose compression settings
     //
@@ -755,7 +755,7 @@ di_parse_thread__entry_point(void *p)
       should_compress = 1;
     }
 #endif
-    
+
     ////////////////////////////
     //- rjf: rdi file not up-to-date? we need to generate it
     //
@@ -769,7 +769,7 @@ di_parse_thread__entry_point(void *p)
           event.string = rdi_path;
           di_p2u_push_event(&event);
         }
-        
+
         //- rjf: kick off process
         OS_Handle process = {0};
         {
@@ -789,7 +789,7 @@ di_parse_thread__entry_point(void *p)
           str8_list_pushf(scratch.arena, &params.cmd_line, "--out:%S", rdi_path);
           process = os_process_launch(&params);
         }
-        
+
         //- rjf: wait for process to complete
         {
           U64 start_wait_t = os_now_microseconds();
@@ -803,7 +803,7 @@ di_parse_thread__entry_point(void *p)
             }
           }
         }
-        
+
         //- rjf: push conversion task end event
         {
           DI_Event event = {DI_EventKind_ConversionEnded};
@@ -822,7 +822,7 @@ di_parse_thread__entry_point(void *p)
         }
       }
     }
-    
+
     ////////////////////////////
     //- rjf: got task -> open file
     //
@@ -837,35 +837,35 @@ di_parse_thread__entry_point(void *p)
       file_props = os_properties_from_file(file);
       file_base = os_file_map_view_open(file_map, OS_AccessFlag_Read, r1u64(0, file_props.size));
     }
-    
+
     ////////////////////////////
     //- rjf: do initial parse of rdi
     //
-    RDI_Parsed rdi_parsed_maybe_compressed = di_rdi_parsed_nil;
-    if(got_task)
-    {
-      RDI_ParseStatus parse_status = rdi_parse((U8 *)file_base, file_props.size, &rdi_parsed_maybe_compressed);
-      (void)parse_status;
-    }
-    
+    //!! RDI_Parsed rdi_parsed_maybe_compressed = di_rdi_parsed_nil;
+    // if(got_task)
+    // {
+    //   RDI_ParseStatus parse_status = rdi_parse((U8 *)file_base, file_props.size, &rdi_parsed_maybe_compressed);
+    //   (void)parse_status;
+    // }
+
     ////////////////////////////
     //- rjf: decompress & re-parse, if necessary
     //
-    Arena *rdi_parsed_arena = 0;
-    RDI_Parsed rdi_parsed = rdi_parsed_maybe_compressed;
-    if(got_task)
-    {
-      U64 decompressed_size = rdi_decompressed_size_from_parsed(&rdi_parsed_maybe_compressed);
-      if(decompressed_size > file_props.size)
-      {
-        rdi_parsed_arena = arena_alloc();
-        U8 *decompressed_data = push_array_no_zero(rdi_parsed_arena, U8, decompressed_size);
-        rdi_decompress_parsed(decompressed_data, decompressed_size, &rdi_parsed_maybe_compressed);
-        RDI_ParseStatus parse_status = rdi_parse(decompressed_data, decompressed_size, &rdi_parsed);
-        (void)parse_status;
-      }
-    }
-    
+    //!! Arena *rdi_parsed_arena = 0;
+    // RDI_Parsed rdi_parsed = rdi_parsed_maybe_compressed;
+    // if(got_task)
+    // {
+    //   U64 decompressed_size = rdi_decompressed_size_from_parsed(&rdi_parsed_maybe_compressed);
+    //   if(decompressed_size > file_props.size)
+    //   {
+    //     rdi_parsed_arena = arena_alloc();
+    //     U8 *decompressed_data = push_array_no_zero(rdi_parsed_arena, U8, decompressed_size);
+    //     rdi_decompress_parsed(decompressed_data, decompressed_size, &rdi_parsed_maybe_compressed);
+    //     RDI_ParseStatus parse_status = rdi_parse(decompressed_data, decompressed_size, &rdi_parsed);
+    //     (void)parse_status;
+    //   }
+    // }
+
     ////////////////////////////
     //- rjf: commit parsed info to cache
     //
@@ -879,13 +879,13 @@ di_parse_thread__entry_point(void *p)
         node->file_map = file_map;
         node->file_base = file_base;
         node->file_props = file_props;
-        node->arena = rdi_parsed_arena;
-        node->rdi = rdi_parsed;
+        //!! node->arena = rdi_parsed_arena;
+        //!! node->rdi = rdi_parsed;
         node->parse_done = 1;
       }
     }
     os_condition_variable_broadcast(stripe->cv);
-    
+
     scratch_end(scratch);
   }
 }

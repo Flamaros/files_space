@@ -1,2 +1,8 @@
-[] Supprimer la fonction rd_cmd ? Est-ce que c'est quelque chose de spécifique pour le debugger ou est-ce que ça pourrait avoir un intéret pour moi ?
+[-] Supprimer module RDI et utilisateurs directs (eval et eval_visualization)
 
+[ ] Me créer ma vue, regarder dans files_space_core.c le commentaire "allocate any missing views"
+
+[ ] Supprimer la fonction rd_cmd ? Est-ce que c'est quelque chose de spécifique pour le debugger ou est-ce que ça pourrait avoir un intéret pour moi ?
+[ ] Supprimer la macro OS_GRAPHICAL qu'on voit dans la fonction frame
+[ ] Supprimer le code de profiling dans la function frame
+[ ] Renommer le module RD (Rad Debugger) en FS (Files Space)
